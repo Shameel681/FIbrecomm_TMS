@@ -12,10 +12,19 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 100px; 
   }
   body {
     font-family: var(--font-sans);
     @apply antialiased bg-gray-200;
+  }
+  
+  /* Ensure elements are hidden until AOS triggers them */
+  [data-aos] {
+    pointer-events: none;
+  }
+  .aos-animate {
+    pointer-events: auto;
   }
 }
 
@@ -25,13 +34,29 @@
     transform: scaleX(0);
     transform-origin: center;
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    
-    /* ADD THESE TO SOFTEN THE LOOK */
-    border-radius: 9999px; /* Rounds the edges */
-    box-shadow: 0 0 8px rgba(239, 64, 35, 0.3); /* Subtle dull red glow */
+    border-radius: 9999px;
+    box-shadow: 0 0 8px rgba(239, 64, 35, 0.3);
   }
 
   .underline-bar-active {
     transform: scaleX(1);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--color-brand-navy);
+    border-radius: 10px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--color-brand-red);
   }
 }

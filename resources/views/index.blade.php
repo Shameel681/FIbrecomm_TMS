@@ -1,27 +1,36 @@
 @extends('layouts.app')
 
+@push('styles')
+    {{-- AOS CSS --}}
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        /* Prevents horizontal scrollbar during slide animations */
+        #about, #home-intro { overflow-x: hidden; }
+    </style>
+@endpush
+
 @section('main_content')
     
     {{-- Section: HOME --}}
     <section id="home">
         <div class="w-full">
             <img 
-                src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&h=450&fit=crop" 
+                src="/images/photo1.png" 
                 alt="Professional team" 
-                class="w-full h-[450px] object-cover block"
-            >
+                class="w-full h-[450px] object-cover block">
         </div>
     </section>
 
     <section id="home" class="w-full bg-gray-50 py-12 px-10 border-b border-gray-200">
-        <div class="text-center mb-12">
+        <div class="text-center mb-12" data-aos="fade-up">
             <h2 class="text-3xl font-bold text-brand-navy">Join Us as a Practical Trainee</h2>
             <p class="text-brand-red mt-2">Are you looking to gain hands-on experience in a dynamic environment?</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="bg-white p-8 border border-gray-200 rounded-2xl shadow-sm text-center flex flex-col items-center">
-                <div class="mb-5 text-brand-red">
+            {{-- 1. Home Card 1 --}}
+            <div class="bg-white p-8 border border-gray-200 rounded-2xl shadow-sm text-center flex flex-col items-center" data-aos="fade-up" data-aos-delay="100">
+                <div class="mb-5 text-brand-red" data-aos="zoom-in" data-aos-delay="400">
                     <svg class="h-12 w-12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a2.5 2.5 0 1 1 0 5a2.5 2.5 0 0 1 0-5zM8 10c0-2 8-2 8 0v3H8v-3zM5 6a2 2 0 1 1 0 4a2 2 0 0 1 0-4zM19 6a2 2 0 1 1 0 4a2 2 0 0 1 0-4zM3 14c0-1.5 4-1.5 4 0v2H3v-2zM17 14c0-1.5 4-1.5 4 0v2h-4v-2z"/><rect x="6" y="17" width="12" height="3" rx="1"/></svg>
                 </div>
                 <h3 class="text-xl font-bold text-brand-navy mb-3">Why Intern with Us?</h3>
@@ -31,17 +40,24 @@
                     <li>Develop skills in a supportive team</li>
                 </ul>
             </div>
-            <div class="bg-white p-8 border border-gray-200 rounded-2xl shadow-sm text-center flex flex-col items-center">
-                <div class="mb-5 text-brand-red">
+            
+            {{-- 1. Home Card 2 --}}
+            <div class="bg-white p-8 border border-gray-200 rounded-2xl shadow-sm text-center flex flex-col items-center" data-aos="fade-up" data-aos-delay="200">
+                <div class="mb-5 text-brand-red" data-aos="zoom-in" data-aos-delay="500">
                     <svg class="h-12 w-12" fill="currentColor" viewBox="0 0 24 24"><path d="M10 2a8 8 0 1 0 4.9 14.32l4.39 4.39a1 1 0 0 0 1.42-1.42l-4.39-4.39A8 8 0 0 0 10 2zm0 2a6 6 0 1 1 0 12a6 6 0 0 1 0-12z"/></svg>
                 </div>
                 <h3 class="text-xl font-bold text-brand-navy mb-3">Opportunities</h3>
                 <p class="text-sm text-gray-500">Find a role that matches your academic background and career goals.</p>
             </div>
-            <div class="bg-white p-8 border border-gray-200 rounded-2xl shadow-sm text-center flex flex-col items-center">
-                <div class="mb-5 text-brand-red">
-                    <svg class="h-12 w-12" fill="currentColor" viewBox="0 0 24 24"><path d="M4 4h6v6H4V4zm10 0h6v6h-6V4zM4 14h6v6H4v-6zm10 4h6v2h-6v-2zm0-4h6v2h-6v-2z"/></svg>
-                </div>
+
+            {{-- 1. Home Card 3 --}}
+            <div class="bg-white p-8 border border-gray-200 rounded-2xl shadow-sm text-center flex flex-col items-center" data-aos="fade-up" data-aos-delay="300">
+                <div class="mb-5 text-brand-red" data-aos="zoom-in" data-aos-delay="600">
+                     <svg class="h-12 w-12" fill="currentColor" viewBox="0 0 24 24">
+                         <path d="M3 3h7v7H3V3 h0 M14 3h7v7h-7V3 h0 M14 14h7v7h-7v-7 h0 M3 14h7v7H3v-7 " /> 
+                        </svg>
+                    </div>
+
                 <h3 class="text-xl font-bold text-brand-navy mb-3">Fields Available</h3>
                 <p class="text-sm text-gray-500">IT, Engineering, HR, Finance, and many other corporate departments.</p>
             </div>
@@ -78,14 +94,22 @@
                 </p>
             </div>
             
-            <div class="bg-brand-navy text-white p-10 rounded-2xl shadow-2xl relative overflow-hidden">
-                {{-- Decorative background element --}}
+            {{-- 2. The Blue Box --}}
+            <div class="bg-brand-navy text-white p-10 rounded-2xl shadow-2xl relative overflow-hidden" data-aos="fade-left">
                 <div class="absolute -right-10 -top-10 h-40 w-40 bg-white/5 rounded-full"></div>
                 
                 <h3 class="text-2xl font-bold mb-6 flex items-center gap-3">
                     <svg class="h-8 w-8 text-brand-red" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9.75 14L2.25 14L2.25 17M14.25 17L14.25 14L21.75 14L21.75 17M9.75 9L9.75 6L2.25 6L2.25 9M14.25 9L14.25 6L21.75 6L21.75 9M12 21L12 18M12 3L12 6" />
+                           <line x1="12" y1="2" x2="12" y2="6" stroke-linecap="round" stroke-linejoin="round" />
+                           <line x1="12" y1="18" x2="12" y2="22" stroke-linecap="round" stroke-linejoin="round" />
+                           <line x1="4.93" y1="4.93" x2="7.76" y2="7.76" stroke-linecap="round" stroke-linejoin="round" />
+                           <line x1="16.24" y1="16.24" x2="19.07" y2="19.07" stroke-linecap="round" stroke-linejoin="round" />
+                           <line x1="2" y1="12" x2="6" y2="12" stroke-linecap="round" stroke-linejoin="round" />
+                           <line x1="18" y1="12" x2="22" y2="12" stroke-linecap="round" stroke-linejoin="round" />
+                           <line x1="4.93" y1="19.07" x2="7.76" y2="16.24" stroke-linecap="round" stroke-linejoin="round" />
+                           <line x1="16.24" y1="7.76" x2="19.07" y2="4.93" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
+
                     Our Infrastructure
                 </h3>
                 <div class="space-y-6">
@@ -111,9 +135,15 @@
                     </div>
                     <div class="flex items-start gap-4">
                         <div class="text-brand-red mt-1 font-bold text-xl">
-                            <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.056M14 10l-2 1m0 0l-2 1m2-1V3.055M10 21v-4.5M14 4.5V9m-4-7a1 1 0 00-1 1v2a1 1 0 001 1h2a1 1 0 001-1V2a1 1 0 00-1-1H10z" />
-                            </svg>
+                            <svg class="h-8 w-8 text-brand-red" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                 <circle cx="12" cy="12" r="2" />
+                                 <path stroke-linecap="round" stroke-linejoin="round"
+                                 d="M16.24 7.76a6 6 0 0 1 0 8.49
+                                    m-8.48-.01a6 6 0 0 1 0-8.49
+                                     m11.31-2.82a10 10 0 0 1 0 14.14
+                                      m-14.14 0a10 10 0 0 1 0-14.14" />
+                                  </svg>
+
                         </div>
                         <p class="text-sm text-gray-300 flex-1">
                             Provides seamless intercity and **cross-border connectivity** for global solutions.
@@ -123,7 +153,7 @@
             </div>
         </div>
 
-        {{-- Core Offerings (Cards) --}}
+        {{-- 3. Core Offerings --}}
         <h3 class="text-2xl font-bold text-brand-navy text-center mb-10 flex items-center justify-center gap-3">
             <svg class="h-8 w-8 text-brand-red" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
@@ -131,37 +161,46 @@
             Our Core Offerings
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center flex flex-col items-center">
+            <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center flex flex-col items-center" data-aos="zoom-in" data-aos-delay="100">
                 <div class="mb-3 text-brand-navy">
-                    <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                    <svg class="w-10 h-10 text-brand-blue" fill="currentColor" viewBox="0 0 24 24">
+
+                        <path d="M12 7.205c4.418 0 8-1.165 8-2.602C20 3.165 16.418 2 12 2S4 3.165 4 4.603c0 1.437 3.582 2.602 8 2.602ZM12 22c4.963 0 8-1.686 8-2.603v-4.404c-.052.032-.112.06-.165.09a7.75 7.75 0 0 1-.745.387c-.193.088-.394.173-.6.253-.063.024-.124.05-.189.073a18.934 18.934 0 0 1-6.3.998c-2.135.027-4.26-.31-6.3-.998-.065-.024-.126-.05-.189-.073a10.143 10.143 0 0 1-.852-.373 7.75 7.75 0 0 1-.493-.267c-.053-.03-.113-.058-.165-.09v4.404C4 20.315 7.037 22 12 22Zm7.09-13.928a9.91 9.91 0 0 1-.6.253c-.063.025-.124.05-.189.074a18.935 18.935 0 0 1-6.3.998c-2.135.027-4.26-.31-6.3-.998-.065-.024-.126-.05-.189-.074a10.163 10.163 0 0 1-.852-.372 7.816 7.816 0 0 1-.493-.268c-.055-.03-.115-.058-.167-.09V12c0 .917 3.037 2.603 8 2.603s8-1.686 8-2.603V7.596c-.052.031-.112.059-.165.09a7.816 7.816 0 0 1-.745.386Z"/>
                     </svg>
+
                 </div>
                 <h4 class="font-bold text-brand-navy text-lg mb-1">Bandwidth</h4>
                 <p class="text-xs text-gray-500">High-capacity data transmission.</p>
             </div>
-            <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center flex flex-col items-center">
+            <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center flex flex-col items-center" data-aos="zoom-in" data-aos-delay="200">
                 <div class="mb-3 text-brand-navy">
-                    <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v2a2 2 0 01-2 2h-5m-9 0a2 2 0 01-2-2v-2a2 2 0 012-2h5m-9 0V7a3 3 0 013-3h3a3 3 0 013 3v4" />
+                    <svg class="h-10 w-10" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M4 4a1 1 0 0 1 1-1h14a1 1 0 1 1 0 2v14a1 1 0 1 1 0 2H5a1 1 0 1 1 0-2V5a1 1 0 0 1-1-1Zm5 2a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H9Zm5 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-1Zm-5 4a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H9Zm5 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1h-1Zm-3 4a2 2 0 0 0-2 2v3h2v-3h2v3h2v-3a2 2 0 0 0-2-2h-2Z" />
                     </svg>
                 </div>
                 <h4 class="font-bold text-brand-navy text-lg mb-1">Infrastructure</h4>
                 <p class="text-xs text-gray-500">Robust network foundations.</p>
             </div>
-            <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center flex flex-col items-center">
+            <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center flex flex-col items-center" data-aos="zoom-in" data-aos-delay="300">
                 <div class="mb-3 text-brand-navy">
-                    <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.035 2.035M18 5l-2.035 2.035m0 0a2.5 2.5 0 00-3.536 3.536m3.536-3.536a2.5 2.5 0 013.536 3.536m0 0V21m-9-9h.01M14 15.5l1.5 1.5M10.5 9l-1.5 1.5M12 12l-3-3" />
-                    </svg>
+                    <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 3a17.9 17.9 0 0 0-10.95 3.7 1 1 0 0 0-.1 1.48l1.42 1.6a1 1 0 0 0 1.35.1A14 14 0 0 1 12 7a14 14 0 0 1 8.28 2.88 1 1 0 0 0 1.35-.1l1.42-1.6a1 1 0 0 0-.1-1.48A17.9 17.9 0 0 0 12 3Z"/>
+                        <path d="M12 9a11.9 11.9 0 0 0-7.37 2.46 1 1 0 0 0-.13 1.46l1.53 1.76a1 1 0 0 0 1.33.14A8 8 0 0 1 12 13a8 8 0 0 1 4.64 1.82 1 1 0 0 0 1.33-.14l1.53-1.76a1 1 0 0 0-.13-1.46A11.9 11.9 0 0 0 12 9Z"/>
+                        <path d="M12 15a6 6 0 0 0-3.47 1.11 1 1 0 0 0-.16 1.44l2.02 2.31a1 1 0 0 0 1.22.22l.39-.2.39.2a1 1 0 0 0 1.22-.22l2.02-2.31a1 1 0 0 0-.16-1.44A6 6 0 0 0 12 15Z"/></svg>
                 </div>
                 <h4 class="font-bold text-brand-navy text-lg mb-1">Internet</h4>
                 <p class="text-xs text-gray-500">High-speed, reliable connectivity.</p>
             </div>
-            <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center flex flex-col items-center">
+            <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center flex flex-col items-center" data-aos="zoom-in" data-aos-delay="400">
                 <div class="mb-3 text-brand-navy">
-                    <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c1.657 0 3 .895 3 2s-1.343 2-3 2-3 .895-3 2 1.343 2 3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V3m0 9v3m0 0V21m-3-3h6M2.923 5.996h14.154a4 4 0 013.824 4.02l-1.157 7.086A4 4 0 0117.843 21H6.157a4 4 0 01-3.824-4.02l-1.157-7.086a4 4 0 013.824-4.02z" />
+                    <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M12.503 2.134a1 1 0 0 0-1 0L4.501 6.17A1 1 0 0 0 4.5 7.902l7.002 4.047a1 1 0 0 0 1 0l6.998-4.04a1 1 0 0 0 0-1.732l-6.997-4.042Z" />
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M5.005 10.19a1 1 0 0 1 1 1v.233l5.998 3.464L18 11.423v-.232a1 1 0 1 1 2 0V12a1 1 0 0 1-.5.866l-6.997 4.042a1 1 0 0 1-1 0l-6.998-4.042a1 1 0 0 1-.5-.866v-.81a1 1 0 0 1 1-1Z" />
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M5 15.15a1 1 0 0 1 1 1v.232l5.997 3.464 5.998-3.464v-.232a1 1 0 1 1 2 0v.81a1 1 0 0 1-.5.865l-6.998 4.042a1 1 0 0 1-1 0L4.5 17.824a1 1 0 0 1-.5-.866v-.81a1 1 0 0 1 1-1Z" />
                     </svg>
                 </div>
                 <h4 class="font-bold text-brand-navy text-lg mb-1">Value Added</h4>
@@ -170,15 +209,164 @@
         </div>
         </div>
     </section>
-    </section>
 
     {{-- Section: INTERNSHIP FORM --}}
-    <section id="internship" class="min-h-screen py-24 px-10 bg-gray-50 border-b border-gray-200 flex flex-col justify-center">
-        <h2 class="text-3xl font-bold text-brand-navy text-center uppercase">Internship Application</h2>
-        <div class="mt-12 max-w-2xl mx-auto border-2 border-dashed border-gray-200 rounded-xl p-20 text-center text-gray-400 font-medium w-full">
-            Form content will be placed here
+    <section id="internship" class="py-24 px-10 bg-gray-50 border-b border-gray-200">
+        <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-brand-navy uppercase tracking-wider">Internship Application</h2>
+            <div class="h-1 w-20 bg-brand-red mx-auto mt-4"></div>
+            <p class="text-gray-500 mt-4 text-sm">Please scroll within the box to complete all fields.</p>
+        </div>
+
+        {{-- Success/Error Feedback --}}
+        @if(session('success'))
+            <div id="success-alert" class="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-xl shadow-sm animate-bounce">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if($errors->any())
+            <div class="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-xl shadow-sm">
+                <p class="font-bold mb-2">Please correct the following errors:</p>
+                <ul class="list-disc list-inside text-sm">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form action="{{ route('trainee.store') }}" method="POST" class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden">
+            @csrf
+            
+            <div class="max-h-[600px] overflow-y-auto p-8 md:p-12 custom-scrollbar">
+                
+                {{-- BLOCK 1: PERSONAL INFORMATION --}}
+                <div class="mb-10">
+                    <h3 class="text-lg font-bold text-brand-red mb-6 flex items-center gap-2">
+                        <span class="bg-brand-red text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">1</span>
+                        Personal Information
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">1. Full Name (as per NRIC/IC)</label>
+                            <input type="text" name="full_name" value="{{ old('full_name') }}" required 
+                                class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-brand-red focus:ring-2 focus:ring-brand-red/20 outline-none transition-all uppercase" placeholder="">
+                        </div>
+                        <div>
+                             <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">2. Email Address</label>
+                             <input type="email" name="email" value="{{ old('email') }}" required pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.com$" title="Please enter a valid email address ending in .com (e.g., user@example.com)" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-brand-red focus:ring-2 focus:ring-brand-red/20 outline-none transition-all"  placeholder="name@email.com">
+                            </div>
+                        <div>
+                            <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">3. Phone No. (10-11 digits)</label>
+                            <input type="tel" name="phone" value="{{ old('phone') }}" required pattern="[0-9]{10,11}"
+                                class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-brand-red focus:ring-2 focus:ring-brand-red/20 outline-none transition-all" placeholder="0123456789">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">4. Current Address</label>
+                            <textarea name="address" rows="3" required 
+                                class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-brand-red focus:ring-2 focus:ring-brand-red/20 outline-none transition-all resize-none" placeholder="">{{ old('address') }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="mb-10 border-gray-100">
+
+                {{-- BLOCK 2: ACADEMIC BACKGROUND --}}
+                <div class="mb-10">
+                    <h3 class="text-lg font-bold text-brand-red mb-6 flex items-center gap-2">
+                        <span class="bg-brand-red text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">2</span>
+                        Academic Background
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">5. Name of Institution</label>
+                            <input type="text" name="institution" value="{{ old('institution') }}" required class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-brand-red outline-none transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">6. Fields of Study / Major</label>
+                            <input type="text" name="major" value="{{ old('major') }}" required class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-brand-red outline-none transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">7. Current Level of Study</label>
+                            <div class="flex flex-wrap gap-4 mt-3">
+                                <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                                    <input type="radio" name="study_level" value="diploma" onclick="toggleStudyOther(false)" required {{ old('study_level') == 'diploma' ? 'checked' : '' }} class="accent-brand-red"> Diploma
+                                </label>
+                                <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                                    <input type="radio" name="study_level" value="degree" onclick="toggleStudyOther(false)" {{ old('study_level') == 'degree' ? 'checked' : '' }} class="accent-brand-red"> Degree
+                                </label>
+                                <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                                    <input type="radio" name="study_level" value="others" onclick="toggleStudyOther(true)" id="lvl_others" {{ old('study_level') == 'others' ? 'checked' : '' }} class="accent-brand-red"> Others:
+                                </label>
+                                <input type="text" name="study_level_other" id="study_level_other" disabled value="{{ old('study_level_other') }}"
+                                    class="border-b border-gray-300 focus:border-brand-red outline-none text-sm pb-1 w-32 disabled:bg-gray-100 italic" placeholder="Specify level">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">8. Expected Graduation</label>
+                            <input type="date" name="grad_date" value="{{ old('grad_date') }}" required class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-brand-red outline-none transition-all">
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="mb-10 border-gray-100">
+
+                {{-- BLOCK 3: INTERNSHIP DETAILS --}}
+                <div class="mb-5">
+                    <h3 class="text-lg font-bold text-brand-red mb-6 flex items-center gap-2">
+                        <span class="bg-brand-red text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">3</span>
+                        Internship Preferences
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">9. Duration (Months)</label>
+                            <input type="number" name="duration" value="{{ old('duration') }}" min="1" max="12" required class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-brand-red outline-none transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">10. Preferred Start Date</label>
+                            <input type="date" name="start_date" value="{{ old('start_date') }}" required class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-brand-red outline-none transition-all">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">11. Area of Interest</label>
+                            <select name="interest" id="interest_select" onchange="toggleInterestOther()" required 
+                                class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-brand-red outline-none transition-all bg-white">
+                                <option value="">-- Select Area --</option>
+                                @php
+                                    $interests = ['Engineering', 'IT', 'Product', 'Business Development', 'Marketing Communication', 'Sales', 'Procurement', 'Finance', 'Account', 'Strategic Management', 'Human Resource', 'Administration', 'Legal & Regulatory', 'Integrity & Governance', 'Risk Management', 'Others'];
+                                @endphp
+                                @foreach($interests as $opt)
+                                    <option value="{{ $opt }}" {{ old('interest') == $opt ? 'selected' : '' }}>{{ $opt }}</option>
+                                @endforeach
+                            </select>
+                            <input type="text" name="interest_other" id="interest_other" disabled value="{{ old('interest_other') }}"
+                                class="w-full mt-3 px-4 py-2 rounded-lg border border-gray-100 italic text-sm outline-none focus:border-brand-red disabled:bg-gray-100" placeholder="If 'Others', please specify here">
+                        </div>
+                        <div class="md:col-span-2 bg-gray-50 p-6 rounded-xl border border-gray-100">
+                            <label class="block text-sm font-bold text-brand-navy mb-4">12. Required for coursework?</label>
+                            <div class="flex gap-8">
+                                <label class="flex items-center gap-2 font-medium text-gray-700 cursor-pointer">
+                                    <input type="radio" name="coursework_req" value="yes" required {{ old('coursework_req') == 'yes' ? 'checked' : '' }} class="accent-brand-red"> Yes
+                                </label>
+                                <label class="flex items-center gap-2 font-medium text-gray-700 cursor-pointer">
+                                    <input type="radio" name="coursework_req" value="no" {{ old('coursework_req') == 'no' ? 'checked' : '' }} class="accent-brand-red"> No
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-8 bg-gray-50 border-t border-gray-100">
+                <button type="submit" class="w-full bg-brand-navy hover:bg-brand-red text-white font-bold py-4 rounded-xl transition-all duration-300 shadow-xl uppercase tracking-widest">
+                    Submit Application
+                </button>
+            </div>
+        </form>
         </div>
     </section>
+
 
     {{-- Section: OUR LOCATION --}}
     <section id="location" class="min-h-screen py-12 px-10 bg-gray-20 border-b border-gray-200 flex flex-col justify-center">
@@ -223,7 +411,7 @@
                     <p class="text-sm text-gray-500 mb-6 font-medium">(24 hours)</p>
                     <div class="text-gray-600 text-md leading-relaxed mb-8">Level 35 (North Wing), Menara TM,<br>Off Jalan Pantai Baharu,<br>59200 Kuala Lumpur</div>
                     <div class="space-y-4 text-md">
-                        <p class="text-gray-700 font-bold">E-mail : <a href="mailto:sales.enquiries@fibrecomm.net.my" class="text-blue-600 font-normal hover:underline">sales.enquiries@fibrecomm.net.my</a></p>
+                        <p class="text-gray-700 font-bold">E-mail : <a href="mailto:nocfcn@fibrecomm.net.my" class="text-blue-600 font-normal hover:underline">nocfcn@fibrecomm.net.my</a></p>
                         <p class="text-gray-700"><span class="font-bold">Phone :</span> +(603) 2240 1530</p>
                     </div>
                 </div>
@@ -232,3 +420,68 @@
     </section>
 
 @endsection
+
+@push('scripts')
+    {{-- AOS JS --}}
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100,
+            easing: 'ease-in-out',
+        });
+
+        function toggleStudyOther(show) {
+            const otherInput = document.getElementById('study_level_other');
+            if (otherInput) {
+                otherInput.disabled = !show;
+                otherInput.required = show;
+                if (!show) {
+                    otherInput.value = '';
+                }
+            }
+        }
+
+
+        function toggleInterestOther() {
+            const select = document.getElementById('interest_select');
+            const otherInput = document.getElementById('interest_other');
+            
+            if (select && otherInput) {
+                const isOthers = select.value === 'Others';
+                otherInput.disabled = !isOthers;
+                otherInput.required = isOthers;
+                if (!isOthers) {
+                    otherInput.value = '';
+                }
+            }
+        }
+
+
+        function initAutoHide() {
+            const alert = document.getElementById('success-alert');
+            if (alert) {
+                setTimeout(() => {
+                    alert.style.transition = "opacity 1s ease";
+                    alert.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        alert.remove();
+                    }, 1000);
+                }, 10000); 
+            }
+        }
+
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initAutoHide();
+            const interestSelect = document.getElementById('interest_select');
+            if (interestSelect) toggleInterestOther();
+
+            const othersRadio = document.getElementById('lvl_others');
+            if (othersRadio) toggleStudyOther(othersRadio.checked);
+        });
+    </script>
+@endpush
