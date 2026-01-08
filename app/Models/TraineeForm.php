@@ -27,5 +27,16 @@ class TraineeForm extends Model
         'start_date',
         'interest',
         'coursework_req',
+        'cv_path',          
+        'uni_letter_path',   
+    ];
+
+    /**
+     * The attributes that should be cast.
+     */
+    protected $casts = [
+        'grad_date' => 'date',
+        'start_date' => 'date',
+        'duration' => 'integer',
     ];
 }

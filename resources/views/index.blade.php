@@ -6,7 +6,38 @@
     <style>
         /* Prevents horizontal scrollbar during slide animations */
         #about, #home-intro { overflow-x: hidden; }
-    </style>
+
+        <style>
+    /* ... existing styles ... */
+
+    /* Core Offering Hover Animation */
+    .offering-card {
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .offering-card:hover {
+        background-color: #EF4023; /* brand-red */
+        transform: translateY(-10px);
+        box-shadow: 0 20px 25px -5px rgba(239, 64, 35, 0.2);
+        border-color: #EF4023;
+    }
+
+    /* Change text and icon colors to white on hover */
+    .offering-card:hover h4, 
+    .offering-card:hover p, 
+    .offering-card:hover .icon-container {
+        color: white !important;
+    }
+
+    .offering-card .icon-container {
+        transition: transform 0.3s ease;
+    }
+
+    .offering-card:hover .icon-container {
+        transform: scale(1.1);
+    }
+</style>
+
 @endpush
 
 @section('main_content')
@@ -154,58 +185,61 @@
         </div>
 
         {{-- 3. Core Offerings --}}
-        <h3 class="text-2xl font-bold text-brand-navy text-center mb-10 flex items-center justify-center gap-3">
-            <svg class="h-8 w-8 text-brand-red" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
+    <h3 class="text-2xl font-bold text-brand-navy text-center mb-10 flex items-center justify-center gap-3">
+    <svg class="h-8 w-8 text-brand-red" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
+    </svg>
+    Our Core Offerings
+    </h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    {{-- Card 1 --}}
+    <div class="offering-card bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center flex flex-col items-center cursor-default" data-aos="zoom-in" data-aos-delay="100">
+        <div class="icon-container mb-3 text-brand-navy">
+            <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 7.205c4.418 0 8-1.165 8-2.602C20 3.165 16.418 2 12 2S4 3.165 4 4.603c0 1.437 3.582 2.602 8 2.602ZM12 22c4.963 0 8-1.686 8-2.603v-4.404c-.052.032-.112.06-.165.09a7.75 7.75 0 0 1-.745.387c-.193.088-.394.173-.6.253-.063.024-.124.05-.189.073a18.934 18.934 0 0 1-6.3.998c-2.135.027-4.26-.31-6.3-.998-.065-.024-.126-.05-.189-.073a10.143 10.143 0 0 1-.852-.373 7.75 7.75 0 0 1-.493-.267c-.053-.03-.113-.058-.165-.09v4.404C4 20.315 7.037 22 12 22Zm7.09-13.928a9.91 9.91 0 0 1-.6.253c-.063.025-.124.05-.189.074a18.935 18.935 0 0 1-6.3.998c-2.135.027-4.26-.31-6.3-.998-.065-.024-.126-.05-.189-.074a10.163 10.163 0 0 1-.852-.372 7.816 7.816 0 0 1-.493-.268c-.055-.03-.115-.058-.167-.09V12c0 .917 3.037 2.603 8 2.603s8-1.686 8-2.603V7.596c-.052.031-.112.059-.165.09a7.816 7.816 0 0 1-.745.386Z"/>
             </svg>
-            Our Core Offerings
-        </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center flex flex-col items-center" data-aos="zoom-in" data-aos-delay="100">
-                <div class="mb-3 text-brand-navy">
-                    <svg class="w-10 h-10 text-brand-blue" fill="currentColor" viewBox="0 0 24 24">
+        </div>
+        <h4 class="font-bold text-brand-navy text-lg mb-1">Bandwidth</h4>
+        <p class="text-xs text-gray-500">High-capacity data transmission.</p>
+    </div>
 
-                        <path d="M12 7.205c4.418 0 8-1.165 8-2.602C20 3.165 16.418 2 12 2S4 3.165 4 4.603c0 1.437 3.582 2.602 8 2.602ZM12 22c4.963 0 8-1.686 8-2.603v-4.404c-.052.032-.112.06-.165.09a7.75 7.75 0 0 1-.745.387c-.193.088-.394.173-.6.253-.063.024-.124.05-.189.073a18.934 18.934 0 0 1-6.3.998c-2.135.027-4.26-.31-6.3-.998-.065-.024-.126-.05-.189-.073a10.143 10.143 0 0 1-.852-.373 7.75 7.75 0 0 1-.493-.267c-.053-.03-.113-.058-.165-.09v4.404C4 20.315 7.037 22 12 22Zm7.09-13.928a9.91 9.91 0 0 1-.6.253c-.063.025-.124.05-.189.074a18.935 18.935 0 0 1-6.3.998c-2.135.027-4.26-.31-6.3-.998-.065-.024-.126-.05-.189-.074a10.163 10.163 0 0 1-.852-.372 7.816 7.816 0 0 1-.493-.268c-.055-.03-.115-.058-.167-.09V12c0 .917 3.037 2.603 8 2.603s8-1.686 8-2.603V7.596c-.052.031-.112.059-.165.09a7.816 7.816 0 0 1-.745.386Z"/>
-                    </svg>
+    {{-- Card 2 --}}
+    <div class="offering-card bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center flex flex-col items-center cursor-default" data-aos="zoom-in" data-aos-delay="200">
+        <div class="icon-container mb-3 text-brand-navy">
+            <svg class="h-10 w-10" fill="currentColor" viewBox="0 0 24 24">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M4 4a1 1 0 0 1 1-1h14a1 1 0 1 1 0 2v14a1 1 0 1 1 0 2H5a1 1 0 1 1 0-2V5a1 1 0 0 1-1-1Zm5 2a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H9Zm5 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-1Zm-5 4a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H9Zm5 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1h-1Zm-3 4a2 2 0 0 0-2 2v3h2v-3h2v3h2v-3a2 2 0 0 0-2-2h-2Z" />
+            </svg>
+        </div>
+        <h4 class="font-bold text-brand-navy text-lg mb-1">Infrastructure</h4>
+        <p class="text-xs text-gray-500">Robust network foundations.</p>
+    </div>
 
-                </div>
-                <h4 class="font-bold text-brand-navy text-lg mb-1">Bandwidth</h4>
-                <p class="text-xs text-gray-500">High-capacity data transmission.</p>
-            </div>
-            <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center flex flex-col items-center" data-aos="zoom-in" data-aos-delay="200">
-                <div class="mb-3 text-brand-navy">
-                    <svg class="h-10 w-10" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="M4 4a1 1 0 0 1 1-1h14a1 1 0 1 1 0 2v14a1 1 0 1 1 0 2H5a1 1 0 1 1 0-2V5a1 1 0 0 1-1-1Zm5 2a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H9Zm5 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-1Zm-5 4a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H9Zm5 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1h-1Zm-3 4a2 2 0 0 0-2 2v3h2v-3h2v3h2v-3a2 2 0 0 0-2-2h-2Z" />
-                    </svg>
-                </div>
-                <h4 class="font-bold text-brand-navy text-lg mb-1">Infrastructure</h4>
-                <p class="text-xs text-gray-500">Robust network foundations.</p>
-            </div>
-            <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center flex flex-col items-center" data-aos="zoom-in" data-aos-delay="300">
-                <div class="mb-3 text-brand-navy">
-                    <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M12 3a17.9 17.9 0 0 0-10.95 3.7 1 1 0 0 0-.1 1.48l1.42 1.6a1 1 0 0 0 1.35.1A14 14 0 0 1 12 7a14 14 0 0 1 8.28 2.88 1 1 0 0 0 1.35-.1l1.42-1.6a1 1 0 0 0-.1-1.48A17.9 17.9 0 0 0 12 3Z"/>
-                        <path d="M12 9a11.9 11.9 0 0 0-7.37 2.46 1 1 0 0 0-.13 1.46l1.53 1.76a1 1 0 0 0 1.33.14A8 8 0 0 1 12 13a8 8 0 0 1 4.64 1.82 1 1 0 0 0 1.33-.14l1.53-1.76a1 1 0 0 0-.13-1.46A11.9 11.9 0 0 0 12 9Z"/>
-                        <path d="M12 15a6 6 0 0 0-3.47 1.11 1 1 0 0 0-.16 1.44l2.02 2.31a1 1 0 0 0 1.22.22l.39-.2.39.2a1 1 0 0 0 1.22-.22l2.02-2.31a1 1 0 0 0-.16-1.44A6 6 0 0 0 12 15Z"/></svg>
-                </div>
-                <h4 class="font-bold text-brand-navy text-lg mb-1">Internet</h4>
-                <p class="text-xs text-gray-500">High-speed, reliable connectivity.</p>
-            </div>
-            <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center flex flex-col items-center" data-aos="zoom-in" data-aos-delay="400">
-                <div class="mb-3 text-brand-navy">
-                    <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="M12.503 2.134a1 1 0 0 0-1 0L4.501 6.17A1 1 0 0 0 4.5 7.902l7.002 4.047a1 1 0 0 0 1 0l6.998-4.04a1 1 0 0 0 0-1.732l-6.997-4.042Z" />
-                        <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="M5.005 10.19a1 1 0 0 1 1 1v.233l5.998 3.464L18 11.423v-.232a1 1 0 1 1 2 0V12a1 1 0 0 1-.5.866l-6.997 4.042a1 1 0 0 1-1 0l-6.998-4.042a1 1 0 0 1-.5-.866v-.81a1 1 0 0 1 1-1Z" />
-                        <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="M5 15.15a1 1 0 0 1 1 1v.232l5.997 3.464 5.998-3.464v-.232a1 1 0 1 1 2 0v.81a1 1 0 0 1-.5.865l-6.998 4.042a1 1 0 0 1-1 0L4.5 17.824a1 1 0 0 1-.5-.866v-.81a1 1 0 0 1 1-1Z" />
-                    </svg>
-                </div>
-                <h4 class="font-bold text-brand-navy text-lg mb-1">Value Added</h4>
-                <p class="text-xs text-gray-500">Enhancing services and solutions.</p>
-            </div>
+    {{-- Card 3 --}}
+    <div class="offering-card bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center flex flex-col items-center cursor-default" data-aos="zoom-in" data-aos-delay="300">
+        <div class="icon-container mb-3 text-brand-navy">
+            <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 3a17.9 17.9 0 0 0-10.95 3.7 1 1 0 0 0-.1 1.48l1.42 1.6a1 1 0 0 0 1.35.1A14 14 0 0 1 12 7a14 14 0 0 1 8.28 2.88 1 1 0 0 0 1.35-.1l1.42-1.6a1 1 0 0 0-.1-1.48A17.9 17.9 0 0 0 12 3Z"/>
+                <path d="M12 9a11.9 11.9 0 0 0-7.37 2.46 1 1 0 0 0-.13 1.46l1.53 1.76a1 1 0 0 0 1.33.14A8 8 0 0 1 12 13a8 8 0 0 1 4.64 1.82 1 1 0 0 0 1.33-.14l1.53-1.76a1 1 0 0 0-.13-1.46A11.9 11.9 0 0 0 12 9Z"/>
+                <path d="M12 15a6 6 0 0 0-3.47 1.11 1 1 0 0 0-.16 1.44l2.02 2.31a1 1 0 0 0 1.22.22l.39-.2.39.2a1 1 0 0 0 1.22-.22l2.02-2.31a1 1 0 0 0-.16-1.44A6 6 0 0 0 12 15Z"/>
+            </svg>
+        </div>
+        <h4 class="font-bold text-brand-navy text-lg mb-1">Internet</h4>
+        <p class="text-xs text-gray-500">High-speed, reliable connectivity.</p>
+    </div>
+
+    {{-- Card 4 --}}
+    <div class="offering-card bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center flex flex-col items-center cursor-default" data-aos="zoom-in" data-aos-delay="400">
+        <div class="icon-container mb-3 text-brand-navy">
+            <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M12.503 2.134a1 1 0 0 0-1 0L4.501 6.17A1 1 0 0 0 4.5 7.902l7.002 4.047a1 1 0 0 0 1 0l6.998-4.04a1 1 0 0 0 0-1.732l-6.997-4.042Z" />
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M5.005 10.19a1 1 0 0 1 1 1v.233l5.998 3.464L18 11.423v-.232a1 1 0 1 1 2 0V12a1 1 0 0 1-.5.866l-6.997 4.042a1 1 0 0 1-1 0l-6.998-4.042a1 1 0 0 1-.5-.866v-.81a1 1 0 0 1 1-1Z" />
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M5 15.15a1 1 0 0 1 1 1v.232l5.997 3.464 5.998-3.464v-.232a1 1 0 1 1 2 0v.81a1 1 0 0 1-.5.865l-6.998 4.042a1 1 0 0 1-1 0L4.5 17.824a1 1 0 0 1-.5-.866v-.81a1 1 0 0 1 1-1Z" />
+            </svg>
+        </div>
+        <h4 class="font-bold text-brand-navy text-lg mb-1">Value Added</h4>
+        <p class="text-xs text-gray-500">Enhancing services and solutions.</p>
+              </div>
         </div>
         </div>
     </section>
@@ -237,7 +271,8 @@
             </div>
         @endif
 
-        <form action="{{ route('trainee.store') }}" method="POST" class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden">
+        {{-- ADDED enctype="multipart/form-data" BELOW --}}
+        <form action="{{ route('trainee.store') }}" method="POST" enctype="multipart/form-data" class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden">
             @csrf
             
             <div class="max-h-[600px] overflow-y-auto p-8 md:p-12 custom-scrollbar">
@@ -256,7 +291,7 @@
                         </div>
                         <div>
                              <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">2. Email Address</label>
-                             <input type="email" name="email" value="{{ old('email') }}" required pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.com$" title="Please enter a valid email address ending in .com (e.g., user@example.com)" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-brand-red focus:ring-2 focus:ring-brand-red/20 outline-none transition-all"  placeholder="name@email.com">
+                             <input type="email" name="email" value="{{ old('email') }}" required pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.com$" title="Please enter a valid email address ending in .com" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-brand-red focus:ring-2 focus:ring-brand-red/20 outline-none transition-all"  placeholder="name@email.com">
                             </div>
                         <div>
                             <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">3. Phone No. (10-11 digits)</label>
@@ -317,7 +352,7 @@
                 <div class="mb-5">
                     <h3 class="text-lg font-bold text-brand-red mb-6 flex items-center gap-2">
                         <span class="bg-brand-red text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">3</span>
-                        Internship Preferences
+                        Internship Preferences & Documents
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
@@ -354,6 +389,20 @@
                                 </label>
                             </div>
                         </div>
+
+                        {{-- ADDED OPTION 13 & 14 BELOW --}}
+                        <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                            <div>
+                                <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">13. Upload CV/Resume (PDF)</label>
+                                <input type="file" name="cv_file" accept=".pdf" required 
+                                    class="w-full px-4 py-2 rounded-lg border border-gray-200 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-brand-navy file:text-white hover:file:bg-brand-red file:cursor-pointer transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">14. University Letter (PDF)</label>
+                                <input type="file" name="uni_letter" accept=".pdf" required 
+                                    class="w-full px-4 py-2 rounded-lg border border-gray-200 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-brand-navy file:text-white hover:file:bg-brand-red file:cursor-pointer transition-all">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -362,8 +411,8 @@
                 <button type="submit" class="w-full bg-brand-navy hover:bg-brand-red text-white font-bold py-4 rounded-xl transition-all duration-300 shadow-xl uppercase tracking-widest">
                     Submit Application
                 </button>
-            </div>
-        </form>
+               </div>
+            </form>
         </div>
     </section>
 
@@ -484,4 +533,6 @@
             if (othersRadio) toggleStudyOther(othersRadio.checked);
         });
     </script>
+
+    
 @endpush
