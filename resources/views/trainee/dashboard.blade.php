@@ -26,7 +26,7 @@
             $dashboardCards = [
                 [
                     'title' => 'Main Home',
-                    'desc' => 'Return to your primary overview, company notices, and status updates.',
+                    'desc' => 'Return to your primary overview and status updates.',
                     'icon' => 'M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z',
                     'route' => route('trainee.dashboard'),
                     'delay' => '200'
@@ -40,7 +40,7 @@
                 ],
                 [
                     'title' => 'My Profile',
-                    'desc' => 'Access and update your personal records, contact info, and documents.',
+                    'desc' => 'Access your personal records, contact info, and documents.',
                     'icon' => 'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z',
                     'route' => route('trainee.profile'), // Updated to the real route
                     'delay' => '600'

@@ -25,10 +25,12 @@ class TraineeForm extends Model
         'grad_date',
         'duration',
         'start_date',
+        'expected_end_date', // Added new column
         'interest',
         'coursework_req',
         'cv_path',          
-        'uni_letter_path',   
+        'uni_letter_path',
+        'is_read',           // Added to track HR opening the profile
     ];
 
     /**
@@ -37,6 +39,8 @@ class TraineeForm extends Model
     protected $casts = [
         'grad_date' => 'date',
         'start_date' => 'date',
+        'expected_end_date' => 'date', // Cast as date for Carbon helper usage
         'duration' => 'integer',
+        'is_read' => 'boolean',
     ];
 }

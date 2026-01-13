@@ -246,7 +246,7 @@
 
     {{-- Section: INTERNSHIP FORM --}}
     <section id="internship" class="py-24 px-10 bg-gray-50 border-b border-gray-200">
-        <div class="max-w-4xl mx-auto">
+    <div class="max-w-4xl mx-auto">
         <div class="text-center mb-12">
             <h2 class="text-3xl font-bold text-brand-navy uppercase tracking-wider">Internship Application</h2>
             <div class="h-1 w-20 bg-brand-red mx-auto mt-4"></div>
@@ -271,7 +271,6 @@
             </div>
         @endif
 
-        {{-- ADDED enctype="multipart/form-data" BELOW --}}
         <form action="{{ route('trainee.store') }}" method="POST" enctype="multipart/form-data" class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden">
             @csrf
             
@@ -292,7 +291,7 @@
                         <div>
                              <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">2. Email Address</label>
                              <input type="email" name="email" value="{{ old('email') }}" required pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.com$" title="Please enter a valid email address ending in .com" class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-brand-red focus:ring-2 focus:ring-brand-red/20 outline-none transition-all"  placeholder="name@email.com">
-                            </div>
+                        </div>
                         <div>
                             <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">3. Phone No. (10-11 digits)</label>
                             <input type="tel" name="phone" value="{{ old('phone') }}" required pattern="[0-9]{10,11}"
@@ -355,16 +354,23 @@
                         Internship Preferences & Documents
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
+                        <div class="md:col-span-2">
                             <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">9. Duration (Months)</label>
-                            <input type="number" name="duration" value="{{ old('duration') }}" min="1" max="12" required class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-brand-red outline-none transition-all">
+                            <input type="number" name="duration" value="{{ old('duration') }}" min="1" max="12" required class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-brand-red outline-none transition-all" placeholder="e.g. 4">
                         </div>
+                        
+                        {{-- UPDATED DATE SECTION --}}
                         <div>
                             <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">10. Preferred Start Date</label>
                             <input type="date" name="start_date" value="{{ old('start_date') }}" required class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-brand-red outline-none transition-all">
                         </div>
+                        <div>
+                            <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">11. Expected End Date</label>
+                            <input type="date" name="expected_end_date" value="{{ old('expected_end_date') }}" required class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-brand-red outline-none transition-all">
+                        </div>
+
                         <div class="md:col-span-2">
-                            <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">11. Area of Interest</label>
+                            <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">12. Area of Interest</label>
                             <select name="interest" id="interest_select" onchange="toggleInterestOther()" required 
                                 class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-brand-red outline-none transition-all bg-white">
                                 <option value="">-- Select Area --</option>
@@ -379,7 +385,7 @@
                                 class="w-full mt-3 px-4 py-2 rounded-lg border border-gray-100 italic text-sm outline-none focus:border-brand-red disabled:bg-gray-100" placeholder="If 'Others', please specify here">
                         </div>
                         <div class="md:col-span-2 bg-gray-50 p-6 rounded-xl border border-gray-100">
-                            <label class="block text-sm font-bold text-brand-navy mb-4">12. Required for coursework?</label>
+                            <label class="block text-sm font-bold text-brand-navy mb-4">13. Required for coursework?</label>
                             <div class="flex gap-8">
                                 <label class="flex items-center gap-2 font-medium text-gray-700 cursor-pointer">
                                     <input type="radio" name="coursework_req" value="yes" required {{ old('coursework_req') == 'yes' ? 'checked' : '' }} class="accent-brand-red"> Yes
@@ -390,15 +396,14 @@
                             </div>
                         </div>
 
-                        {{-- ADDED OPTION 13 & 14 BELOW --}}
                         <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                             <div>
-                                <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">13. Upload CV/Resume (PDF)</label>
+                                <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">14. Upload CV/Resume (PDF)</label>
                                 <input type="file" name="cv_file" accept=".pdf" required 
                                     class="w-full px-4 py-2 rounded-lg border border-gray-200 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-brand-navy file:text-white hover:file:bg-brand-red file:cursor-pointer transition-all">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">14. University Letter (PDF)</label>
+                                <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">15. University Letter (PDF)</label>
                                 <input type="file" name="uni_letter" accept=".pdf" required 
                                     class="w-full px-4 py-2 rounded-lg border border-gray-200 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-brand-navy file:text-white hover:file:bg-brand-red file:cursor-pointer transition-all">
                             </div>
@@ -411,9 +416,9 @@
                 <button type="submit" class="w-full bg-brand-navy hover:bg-brand-red text-white font-bold py-4 rounded-xl transition-all duration-300 shadow-xl uppercase tracking-widest">
                     Submit Application
                 </button>
-               </div>
-            </form>
-        </div>
+            </div>
+        </form>
+    </div>
     </section>
 
 
