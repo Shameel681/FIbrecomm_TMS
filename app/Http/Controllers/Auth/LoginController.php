@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 class LoginController extends Controller
 {
     /**
-     * Handle the login attempt
+     * Handle the login attempt using a single users table
      */
     public function login(Request $request)
     {
@@ -19,38 +19,40 @@ class LoginController extends Controller
             'password' => 'required',
         ]);
 
-        // 2. Try HR Guard
-        if (Auth::guard('hr')->attempt($credentials)) {
+        // 2. Attempt login using the default 'web' guard
+        if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/hr/dashboard');
+
+            // 3. Get the authenticated user
+            $user = Auth::user();
+
+            // 4. Redirect based on role
+            switch ($user->role) {
+                case 'admin':
+                    return redirect()->intended('/admin/users');
+                case 'hr':
+                    return redirect()->intended('/hr/dashboard');
+                case 'supervisor':
+                    return redirect()->intended('/supervisor/dashboard');
+                case 'trainee':
+                    return redirect()->intended('/trainee/dashboard');
+                default:
+                    return redirect()->intended('/');
+            }
         }
 
-        // 3. Try Supervisor Guard
-        if (Auth::guard('supervisor')->attempt($credentials)) {
-            $request->session()->regenerate();
-            return redirect()->intended('/supervisor/dashboard');
-        }
-
-        // 4. Try Trainee Guard
-        if (Auth::guard('trainee')->attempt($credentials)) {
-            $request->session()->regenerate();
-            return redirect()->intended('/trainee/dashboard');
-        }
-
-        // 5. If all fail, go back with error
+        // 5. If attempt fails, go back with error
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
         ])->onlyInput('email');
     }
 
     /**
-     * Handle Logout for all guards
+     * Handle Logout
      */
     public function logout(Request $request)
     {
-        Auth::guard('hr')->logout();
-        Auth::guard('supervisor')->logout();
-        Auth::guard('trainee')->logout();
+        Auth::logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

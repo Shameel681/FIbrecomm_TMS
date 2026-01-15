@@ -41,16 +41,37 @@
                 </div>
 
                 <div class="flex items-center gap-3 relative z-10">
-                    <button onclick="viewApplicant({{ $applicant->id }})" class="px-8 py-3 bg-brand-navy text-white text-[10px] font-black uppercase tracking-widest rounded-sm hover:bg-brand-red hover:shadow-lg active:scale-95 transition-all duration-300">View Profile</button>
-                    
-                    {{-- DELETE BUTTON --}}
-                    <button onclick="openDeleteModal({{ $applicant->id }}, '{{ $applicant->full_name }}')" class="p-3 border-2 border-gray-100 text-gray-400 hover:border-brand-red hover:text-brand-red hover:bg-red-50 transition-all rounded-sm group/del">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                    {{-- 1. VIEW PROFILE BUTTON --}}
+                    <button onclick="viewApplicant({{ $applicant->id }})" 
+                            class="px-6 py-3 bg-brand-navy text-white text-[10px] font-black uppercase tracking-widest rounded-sm hover:bg-brand-red hover:shadow-lg active:scale-95 transition-all duration-300">
+                        View Profile
                     </button>
 
-                    {{-- List Dropdown --}}
+                    {{-- 2. ACTION BUTTONS (MODIFIED TO USE CUSTOM MODAL) --}}
+                    <div class="flex gap-2">
+                        <form id="approve-form-{{ $applicant->id }}" action="{{ route('hr.applicants.approve', $applicant->id) }}" method="POST">
+                            @csrf
+                            <button type="button" 
+                                onclick="confirmAction('approve', '{{ $applicant->id }}', '{{ $applicant->full_name }}')"
+                                class="p-3 border-2 border-green-100 text-green-600 hover:border-green-500 hover:bg-green-50 transition-all rounded-sm group" title="Approve">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                            </button>
+                        </form>
+                        
+                        <form id="reject-form-{{ $applicant->id }}" action="{{ route('hr.applicants.reject', $applicant->id) }}" method="POST">
+                            @csrf
+                            <button type="button" 
+                                onclick="confirmAction('reject', '{{ $applicant->id }}', '{{ $applicant->full_name }}')"
+                                class="p-3 border-2 border-orange-100 text-orange-400 hover:border-orange-500 hover:bg-orange-50 transition-all rounded-sm group" title="Reject">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                            </button>
+                        </form>
+                    </div>
+
+                    {{-- 3. DOWNLOAD BUTTON DROPDOWN --}}
                     <div class="relative dropdown">
-                        <button onclick="toggleDropdown('list-drop-{{ $applicant->id }}')" class="p-3 border-2 border-gray-100 text-gray-400 hover:border-brand-navy hover:text-brand-navy hover:bg-gray-50 transition-all rounded-sm group/btn">
+                        <button onclick="toggleDropdown('list-drop-{{ $applicant->id }}')" 
+                                class="p-3 border-2 border-gray-100 text-gray-400 hover:border-brand-navy hover:text-brand-navy hover:bg-gray-50 transition-all rounded-sm group/btn">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
                         </button>
                         <div id="list-drop-{{ $applicant->id }}" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-100 shadow-xl rounded-md z-50 overflow-hidden">
@@ -59,6 +80,12 @@
                             <a href="{{ route('hr.applicants.downloadLetter', $applicant->id) }}" class="block px-4 py-3 text-[10px] font-black text-brand-navy uppercase hover:bg-gray-50 hover:text-brand-red">University Letter</a>
                         </div>
                     </div>
+
+                    {{-- 4. DELETE BUTTON --}}
+                    <button onclick="openDeleteModal({{ $applicant->id }}, '{{ $applicant->full_name }}')" 
+                             class="p-3 border-2 border-gray-100 text-gray-400 hover:border-brand-red hover:text-brand-red hover:bg-red-50 transition-all rounded-sm group/del">
+                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                    </button>
                 </div>
             </div>
         @empty
@@ -66,6 +93,26 @@
                 <p class="text-[10px] font-black text-gray-300 uppercase tracking-[0.5em]">The applicant queue is empty</p>
             </div>
         @endforelse
+    </div>
+</div>
+
+{{-- CUSTOM ACTION CONFIRMATION MODAL (Approve/Reject) --}}
+<div id="customConfirmModal" class="fixed inset-0 z-[150] hidden bg-brand-navy/95 backdrop-blur-sm flex items-center justify-center p-4">
+    <div id="confirmModalBox" class="bg-white w-full max-w-sm rounded-2xl p-8 shadow-2xl border-t-8 transition-all transform scale-95">
+        <div id="confirmIcon" class="w-16 h-16 rounded-full flex items-center justify-center mb-6 mx-auto">
+            </div>
+        
+        <h3 id="confirmTitle" class="text-2xl font-black text-center uppercase tracking-tighter mb-2"></h3>
+        <p id="confirmMessage" class="text-gray-500 text-center text-[11px] font-bold uppercase tracking-wide leading-relaxed px-4"></p>
+        
+        <div class="mt-8 flex flex-col gap-2">
+            <button id="finalConfirmBtn" class="w-full py-4 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-lg shadow-lg active:scale-95 transition-all">
+                Confirm & Proceed
+            </button>
+            <button onclick="closeConfirmModal()" class="w-full py-3 text-gray-400 text-[9px] font-black uppercase tracking-widest hover:text-brand-navy transition-colors">
+                Cancel
+            </button>
+        </div>
     </div>
 </div>
 
@@ -129,13 +176,65 @@
 
 @push('scripts')
 <script>
+    let activeFormId = null;
+
+    function confirmAction(type, id, name) {
+        const modal = document.getElementById('customConfirmModal');
+        const box = document.getElementById('confirmModalBox');
+        const iconContainer = document.getElementById('confirmIcon');
+        const title = document.getElementById('confirmTitle');
+        const message = document.getElementById('confirmMessage');
+        const confirmBtn = document.getElementById('finalConfirmBtn');
+
+        activeFormId = `${type}-form-${id}`;
+        
+        // Reset Modal
+        modal.classList.remove('hidden');
+        setTimeout(() => box.classList.remove('scale-95'), 10);
+
+        if (type === 'approve') {
+            box.style.borderTopColor = '#10B981'; // Green
+            iconContainer.className = "w-16 h-16 rounded-full flex items-center justify-center mb-6 mx-auto bg-green-50 text-green-500";
+            iconContainer.innerHTML = '<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+            title.innerText = 'Approve Applicant?';
+            title.className = 'text-2xl font-black text-center uppercase tracking-tighter mb-2 text-green-600';
+            message.innerText = `You are approving ${name}. They will be moved to the onboarding queue.`;
+            confirmBtn.className = 'w-full py-4 bg-green-500 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-lg shadow-lg hover:bg-green-600 active:scale-95 transition-all';
+        } else {
+            box.style.borderTopColor = '#F97316'; // Orange
+            iconContainer.className = "w-16 h-16 rounded-full flex items-center justify-center mb-6 mx-auto bg-orange-50 text-orange-500";
+            iconContainer.innerHTML = '<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+            title.innerText = 'Reject Applicant?';
+            title.className = 'text-2xl font-black text-center uppercase tracking-tighter mb-2 text-orange-500';
+            message.innerText = `Are you sure you want to reject ${name}? This action will decline their application.`;
+            confirmBtn.className = 'w-full py-4 bg-orange-500 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-lg shadow-lg hover:bg-orange-600 active:scale-95 transition-all';
+        }
+
+        confirmBtn.onclick = function() {
+            if (activeFormId) {
+                document.getElementById(activeFormId).submit();
+            }
+        };
+    }
+
+    function closeConfirmModal() {
+        const modal = document.getElementById('customConfirmModal');
+        const box = document.getElementById('confirmModalBox');
+        box.classList.add('scale-95');
+        setTimeout(() => modal.classList.add('hidden'), 200);
+        activeFormId = null;
+    }
+
+    // Reuse existing toggleDropdown logic
     function toggleDropdown(id) {
         document.querySelectorAll('.dropdown div[id]').forEach(el => {
             if (el.id !== id) el.classList.add('hidden');
         });
-        document.getElementById(id).classList.toggle('hidden');
+        const element = document.getElementById(id);
+        if (element) element.classList.toggle('hidden');
     }
 
+    // Reuse Delete Modal logic
     function openDeleteModal(id, name) {
         document.getElementById('deleteName').innerText = name;
         document.getElementById('deleteForm').action = `/hr/applicants/${id}`;
@@ -149,7 +248,7 @@
     function toggleDeleteBtn() {
         const checkbox = document.getElementById('safetyCheck');
         const btn = document.getElementById('finalDeleteBtn');
-        if(checkbox.checked) {
+        if(checkbox && checkbox.checked) {
             btn.disabled = false;
             btn.classList.remove('bg-gray-200', 'cursor-not-allowed');
             btn.classList.add('bg-brand-red', 'hover:bg-brand-navy', 'shadow-lg');

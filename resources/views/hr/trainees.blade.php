@@ -4,6 +4,35 @@
 
 @section('hr_content')
 <div class="space-y-8">
+
+    {{-- VALIDATION ERROR ALERT --}}
+    @if ($errors->any())
+        <div class="bg-red-50 border-l-4 border-brand-red p-4 mb-6 shadow-sm animate-pulse">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-brand-red" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-xs font-black text-brand-red uppercase tracking-widest">Account Creation Failed</h3>
+                    <ul class="mt-1 list-disc list-inside text-[10px] text-red-600 font-bold uppercase">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    {{-- SUCCESS ALERT --}}
+    @if(session('success'))
+        <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6 shadow-sm">
+            <p class="text-[10px] font-black text-green-700 uppercase tracking-widest">{{ session('success') }}</p>
+        </div>
+    @endif
+
     {{-- Active Status Header --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6" data-aos="fade-down">
         <div class="col-span-2 bg-white p-8 border border-gray-100 rounded-2xl shadow-sm flex items-center justify-between">
@@ -26,9 +55,58 @@
         </div>
     </div>
 
-    {{-- Trainee List Section --}}
+    {{-- SECTION 1: ONBOARDING QUEUE --}}
+    @if(isset($onboardingQueue) && $onboardingQueue->count() > 0)
+    <div class="bg-white rounded-2xl border-2 border-brand-red/20 shadow-sm flex flex-col overflow-hidden" data-aos="fade-up">
+        <div class="p-6 border-b border-gray-50 bg-brand-red/[0.02] flex justify-between items-center">
+            <div>
+                <h3 class="text-[11px] font-black text-brand-red uppercase tracking-[0.2em]">Ready for Onboarding</h3>
+                <p class="text-[9px] text-gray-400 font-bold uppercase mt-1">Applicants notified via email - Create accounts below</p>
+            </div>
+            <span class="px-3 py-1 bg-brand-red text-white text-[10px] font-black rounded-full">{{ $onboardingQueue->count() }} PENDING</span>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <tbody class="divide-y divide-gray-50">
+                    @foreach($onboardingQueue as $queued)
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-8 py-5">
+                            <p class="text-sm font-black text-brand-navy uppercase">{{ $queued->full_name }}</p>
+                            <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{{ $queued->institution }}</p>
+                        </td>
+                        <td class="px-8 py-5">
+                            <div class="flex flex-col">
+                                <span class="text-[10px] font-black text-brand-navy uppercase">Period: {{ \Carbon\Carbon::parse($queued->start_date)->format('M d, Y') }} to {{ \Carbon\Carbon::parse($queued->expected_end_date)->format('M d, Y') }}</span>
+                                <span class="text-[8px] text-green-600 font-bold uppercase tracking-widest flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path></svg>
+                                    Offer Email Sent
+                                </span>
+                            </div>
+                        </td>
+                        <td class="px-8 py-5 text-right">
+                            {{-- Note: We format the dates here for the JS function to avoid ISO format errors --}}
+                            <button onclick="openOnboardModal({
+                                id: '{{ $queued->id }}',
+                                full_name: '{{ addslashes($queued->full_name) }}',
+                                email: '{{ $queued->email }}',
+                                start_date: '{{ \Carbon\Carbon::parse($queued->start_date)->format('Y-m-d') }}',
+                                expected_end_date: '{{ \Carbon\Carbon::parse($queued->expected_end_date)->format('Y-m-d') }}'
+                            })" 
+                            class="px-6 py-3 bg-brand-navy text-white text-[10px] font-black uppercase tracking-widest rounded-sm hover:bg-brand-red transition-all shadow-md active:scale-95">
+                                Setup Intern Account
+                            </button>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @endif
+
+    {{-- SECTION 2: PERSONNEL DIRECTORY --}}
     <div class="bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col overflow-hidden" data-aos="fade-up" data-aos-delay="200">
-        {{-- List Header/Filters --}}
         <div class="p-6 border-b border-gray-50 bg-gray-50/50 flex justify-between items-center">
             <h3 class="text-[11px] font-black text-brand-navy uppercase tracking-[0.2em]">Personnel Directory</h3>
             <div class="flex gap-4">
@@ -36,7 +114,6 @@
             </div>
         </div>
 
-        {{-- Scrollable Box --}}
         <div class="overflow-y-auto max-h-[600px] custom-scrollbar">
             <table class="w-full text-left border-collapse">
                 <thead class="sticky top-0 bg-white z-10 shadow-sm">
@@ -95,9 +172,9 @@
                     @empty
                     <tr>
                         <td colspan="5" class="p-20 text-center">
-                            <div class="flex flex-col items-center">
-                                <svg class="w-12 h-12 text-gray-200 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                                <p class="text-[10px] font-black text-gray-300 uppercase tracking-[0.5em]">No registered trainees found</p>
+                            <div class="flex flex-col items-center text-gray-300">
+                                <svg class="w-12 h-12 mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                <p class="text-[10px] font-black uppercase tracking-[0.5em]">No registered trainees found</p>
                             </div>
                         </td>
                     </tr>
@@ -108,13 +185,72 @@
     </div>
 </div>
 
-{{-- Inline Search Logic --}}
+{{-- MANUAL ONBOARDING MODAL --}}
+<div id="onboardModal" class="fixed inset-0 z-[100] hidden">
+    <div class="absolute inset-0 bg-brand-navy/80 backdrop-blur-sm"></div>
+    <div class="relative flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
+            <div class="p-6 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                <div>
+                    <h3 class="text-xs font-black text-brand-navy uppercase tracking-widest">Setup Intern Account</h3>
+                    <p class="text-[8px] font-bold text-gray-400 uppercase mt-0.5">Finalize Login Credentials</p>
+                </div>
+                <button onclick="closeOnboardModal()" class="text-gray-400 hover:text-brand-red transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                </button>
+            </div>
+            
+            <form id="onboardForm" action="{{ route('hr.trainees.store_account') }}" method="POST" class="p-8 space-y-5">
+                @csrf
+                <input type="hidden" name="applicant_id" id="modal_applicant_id">
+                <input type="hidden" name="name" id="modal_name_hidden">
+                <input type="hidden" name="email" id="modal_email_hidden">
+                <input type="hidden" name="start_date" id="modal_start_hidden">
+                <input type="hidden" name="end_date" id="modal_end_hidden">
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-[9px] font-black text-gray-400 uppercase tracking-widest block ml-1">Full Name</label>
+                        <div id="display_name" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-xs font-bold text-brand-navy"></div>
+                    </div>
+
+                    <div>
+                        <label class="text-[9px] font-black text-gray-400 uppercase tracking-widest block ml-1">Login Email</label>
+                        <div id="display_email" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-xs font-bold text-brand-navy"></div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[9px] font-black text-gray-400 uppercase tracking-widest block ml-1">Start Date</label>
+                            <div id="display_start" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-[10px] font-bold text-brand-navy"></div>
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-black text-gray-400 uppercase tracking-widest block ml-1">End Date</label>
+                            <div id="display_end" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-[10px] font-bold text-brand-navy"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-blue-50 rounded-lg border border-dashed border-blue-200">
+                    <p class="text-[8px] font-bold text-blue-600 uppercase leading-relaxed text-center">
+                        System will generate a unique temporary password and email it to the trainee automatically.
+                    </p>
+                </div>
+
+                <button type="submit" id="onboardSubmitBtn" class="w-full py-4 bg-brand-navy text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-lg hover:bg-brand-red transition-all shadow-lg active:scale-[0.98]">
+                    Confirm & Send Credentials
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
 @push('scripts')
 <script>
+    // Search Functionality
     document.getElementById('traineeSearch').addEventListener('keyup', function() {
         let filter = this.value.toUpperCase();
         let rows = document.querySelector("#traineeTableBody").rows;
-        
         for (let i = 0; i < rows.length; i++) {
             let nameCol = rows[i].querySelector(".trainee-name");
             if (nameCol) {
@@ -123,6 +259,48 @@
             }
         }
     });
+
+    // Modal Operations
+    function openOnboardModal(data) {
+        // Hydrate Hidden Inputs
+        document.getElementById('modal_applicant_id').value = data.id;
+        document.getElementById('modal_name_hidden').value = data.full_name;
+        document.getElementById('modal_email_hidden').value = data.email;
+        document.getElementById('modal_start_hidden').value = data.start_date;
+        document.getElementById('modal_end_hidden').value = data.expected_end_date;
+
+        // Hydrate Visual UI
+        document.getElementById('display_name').innerText = data.full_name;
+        document.getElementById('display_email').innerText = data.email;
+        document.getElementById('display_start').innerText = data.start_date;
+        document.getElementById('display_end').innerText = data.expected_end_date;
+        
+        // Show Modal
+        const modal = document.getElementById('onboardModal');
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeOnboardModal() {
+        document.getElementById('onboardModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Prevents double submission which causes "Email already taken" errors
+    document.getElementById('onboardForm').onsubmit = function() {
+        const btn = document.getElementById('onboardSubmitBtn');
+        btn.disabled = true;
+        btn.innerText = 'PROCESSING...';
+        btn.classList.add('opacity-50', 'cursor-not-allowed');
+    };
+
+    // Close on backdrop click
+    window.onclick = function(event) {
+        const modal = document.getElementById('onboardModal');
+        if (event && event.target && modal.querySelector('.absolute') && event.target == modal.querySelector('.absolute')) {
+            closeOnboardModal();
+        }
+    }
 </script>
 @endpush
 @endsection

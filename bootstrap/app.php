@@ -11,9 +11,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Register your custom middleware alias here
         $middleware->alias([
             'multi.guest' => \App\Http\Middleware\MultiGuest::class,
+            'role'        => \App\Http\Middleware\CheckRole::class, // Added this line
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

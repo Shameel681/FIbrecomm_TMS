@@ -9,11 +9,6 @@ class TraineeForm extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'full_name',
         'email',
@@ -25,21 +20,19 @@ class TraineeForm extends Model
         'grad_date',
         'duration',
         'start_date',
-        'expected_end_date', // Added new column
+        'expected_end_date',
         'interest',
         'coursework_req',
         'cv_path',          
         'uni_letter_path',
-        'is_read',           // Added to track HR opening the profile
+        'is_read',
+        'status', // <--- ADDED THIS LINE
     ];
 
-    /**
-     * The attributes that should be cast.
-     */
     protected $casts = [
         'grad_date' => 'date',
-        'start_date' => 'date',
-        'expected_end_date' => 'date', // Cast as date for Carbon helper usage
+        'start_date' => 'date:Y-m-d',
+        'expected_end_date' => 'date:Y-m-d',
         'duration' => 'integer',
         'is_read' => 'boolean',
     ];
