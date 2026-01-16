@@ -8,6 +8,7 @@ use App\Http\Controllers\Trainee\ProfileController;
 use App\Http\Controllers\Supervisor\SupervisorDashboardController;
 use App\Http\Controllers\HR\HRDashboardController;
 use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\AdminSvController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,10 +40,26 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Command Center
     Route::get('/dashboard', [AdminUserController::class, 'index'])->name('dashboard');
     Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
-    Route::post('/users/store', [AdminUserController::class, 'store'])->name('users.store');
-    Route::delete('/users/{id}', [AdminUserController::class, 'destroy'])->name('users.destroy');
+
+    // Manage HR Routes (Stay with AdminUserController)
+    Route::get('/manage-hr', [AdminUserController::class, 'manageHr'])->name('managehr');
+    Route::post('/hr/store', [AdminUserController::class, 'storeHr'])->name('hr.store');
+    Route::put('/hr/update/{id}', [AdminUserController::class, 'updateHr'])->name('hr.update'); 
+    Route::delete('/hr/{id}', [AdminUserController::class, 'destroyHr'])->name('hr.destroy');
+
+    // Manage Supervisor Routes (MOVED TO AdminSvController)
+    Route::get('/manage-sv', [AdminSvController::class, 'manageSv'])->name('managesv');
+    Route::post('/sv/store', [AdminSvController::class, 'storeSv'])->name('sv.store');
+    Route::put('/sv/update/{id}', [AdminSvController::class, 'updateSv'])->name('sv.update'); // Added this
+    Route::delete('/sv/{id}', [AdminSvController::class, 'destroySv'])->name('sv.destroy');
+
+    // Manage Trainee Routes
+    Route::get('/manage-trainee', [AdminUserController::class, 'manageTrainee'])->name('managetrainee');
+    Route::post('/trainee/store', [AdminUserController::class, 'storeTrainee'])->name('trainee.store');
+    Route::delete('/trainee/{id}', [AdminUserController::class, 'destroyTrainee'])->name('trainee.destroy');
 });
 
 /*

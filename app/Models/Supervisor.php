@@ -2,22 +2,25 @@
 
 namespace App\Models;
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class Supervisor extends Authenticatable
+class Supervisor extends Model
 {
-    use Notifiable;
+    use HasFactory;
 
     protected $fillable = [
-        'name', 'email', 'password', 'department', 'position'
+        'user_id',
+        'employee_id',
+        'name',
+        'email',
+        'password',
+        'department',
+        'position',
     ];
 
-    protected $hidden = [
-        'password', 'remember_token',
-    ];
-
-    protected $casts = [
-        'password' => 'hashed',
-    ];
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

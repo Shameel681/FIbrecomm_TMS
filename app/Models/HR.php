@@ -2,25 +2,31 @@
 
 namespace App\Models;
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Model; // Changed from Authenticatable since User model handles Auth
 use Illuminate\Notifications\Notifiable;
 
-class HR extends Authenticatable
+class HR extends Model
 {
     use Notifiable;
 
-    // Matches 'hrs' table
     protected $table = 'hrs';
 
     protected $fillable = [
-        'name', 'email', 'password', 'employee_id'
+        'user_id',
+        'employee_id',
+        'name',
+        'email',
+        'password', // Added to allow dummy values for DB satisfaction
     ];
 
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 
+        'remember_token',
     ];
 
-    protected $casts = [
-        'password' => 'hashed',
-    ];
+    // Link back to the main User account
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
