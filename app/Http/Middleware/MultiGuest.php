@@ -12,21 +12,21 @@ class MultiGuest
     /**
      * Handle an incoming request.
      */
-    public function handle(Request $request, Closure $next, string ...$guards): Response
+    public function handle(Request $request, Closure $next): Response
     {
-        // If an HR is logged in and tries to access Index or Login, bounce them to HR Dashboard
-        if (Auth::guard('hr')->check()) {
-            return redirect()->route('hr.dashboard');
-        }
+        // Check if the user is logged in using the default guard
+        if (Auth::check()) {
+            $user = Auth::user();
 
-        // If a Supervisor is logged in, bounce them to Supervisor Dashboard
-        if (Auth::guard('supervisor')->check()) {
-            return redirect()->route('supervisor.dashboard');
-        }
-
-        // If a Trainee is logged in, bounce them to Trainee Dashboard
-        if (Auth::guard('trainee')->check()) {
-            return redirect()->route('trainee.dashboard');
+            // Redirect them away from guest pages (like login/index) 
+            // to their respective dashboards based on their role
+            return match ($user->role) {
+                'admin'      => redirect()->route('admin.dashboard'),
+                'hr'         => redirect()->route('hr.dashboard'),
+                'supervisor' => redirect()->route('supervisor.dashboard'),
+                'trainee'    => redirect()->route('trainee.dashboard'),
+                default      => redirect('/'),
+            };
         }
 
         return $next($request);

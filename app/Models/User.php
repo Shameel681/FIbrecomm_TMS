@@ -36,7 +36,7 @@ class User extends Authenticatable
      */
     public function hrProfile(): HasOne
     {
-        return $this->hasOne(HR::class, 'user_id', 'id');
+        return $this->hasOne(Hr::class, 'user_id', 'id');
     }
 
     /**
@@ -55,21 +55,9 @@ class User extends Authenticatable
         return $this->hasOne(Trainee::class, 'user_id', 'id');
     }
 
-    // --- Role Checks ---
-
-    public function isHR() {
-        return $this->role === 'hr';
-    }
-
-    public function isSupervisor() {
-        return $this->role === 'supervisor';
-    }
-
-    public function isTrainee() {
-        return $this->role === 'trainee';
-    }
-
-    public function isAdmin() {
-        return $this->role === 'admin';
-    }
+    // Role Checks
+    public function isHR() { return $this->role === 'hr'; }
+    public function isSupervisor() { return $this->role === 'supervisor'; }
+    public function isTrainee() { return $this->role === 'trainee'; }
+    public function isAdmin() { return $this->role === 'admin'; }
 }

@@ -191,10 +191,10 @@
                 <div class="flex items-center gap-4">
                     <div class="text-right">
                         <p class="text-[10px] font-black text-brand-red uppercase tracking-widest">Logged in as</p>
-                        <p class="text-sm font-bold text-brand-navy">{{ Auth::guard('hr')->user()->name }}</p>
+                        <p class="text-sm font-bold text-brand-navy">{{ Auth::user()?->name }}</p>
                     </div>
                     <div class="h-10 w-10 bg-brand-navy rounded-sm flex items-center justify-center text-white font-black text-lg shadow-lg border-b-2 border-brand-red">
-                        {{ substr(Auth::guard('hr')->user()->name, 0, 1) }}
+                        {{ substr(Auth::user()?->name ?? 'U', 0, 1) }}
                     </div>
                 </div>
             </header>

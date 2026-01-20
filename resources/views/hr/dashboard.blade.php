@@ -13,7 +13,7 @@
         <div class="relative z-10">
             <h2 class="text-3xl font-bold text-brand-navy uppercase tracking-tighter">System Overview</h2>
             <p class="text-brand-red font-bold mt-1 uppercase tracking-widest text-xs">
-                HR Administrator | {{ Auth::guard('hr')->user()->employee_id }}
+                HR Administrator | {{ Auth::user()->hrProfile?->employee_id }}
             </p>
         </div>
         

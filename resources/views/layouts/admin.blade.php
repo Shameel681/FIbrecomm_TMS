@@ -107,10 +107,6 @@
             <span class="relative z-10">Command Center</span>
         </a>
 
-        <div class="px-4 py-4 mt-4">
-            <p class="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em]">Identity Segments</p>
-        </div>
-
         {{-- Manage HR --}}
         <a href="{{ route('admin.managehr') }}" 
            class="sidebar-link {{ Request::is('admin/manage-hr*') ? 'active-link' : '' }} group flex items-center px-4 py-3.5 rounded transition-all text-[11px] font-black uppercase tracking-widest relative">
@@ -118,18 +114,25 @@
             <span class="relative z-10">Manage HR</span>
         </a>
 
-        {{-- Manage Supervisors (UPDATED) --}}
+        {{-- Manage Supervisors --}}
         <a href="{{ route('admin.managesv') }}" 
            class="sidebar-link {{ Request::is('admin/manage-sv*') ? 'active-link' : '' }} group flex items-center px-4 py-3.5 rounded transition-all text-[11px] font-black uppercase tracking-widest relative">
             <div class="indicator"></div>
             <span class="relative z-10">Manage SV</span>
         </a>
 
-        {{-- Manage Trainees/Interns (UPDATED) --}}
+        {{-- Manage Trainees/Interns --}}
         <a href="{{ route('admin.managetrainee') }}" 
            class="sidebar-link {{ Request::is('admin/manage-trainee*') ? 'active-link' : '' }} group flex items-center px-4 py-3.5 rounded transition-all text-[11px] font-black uppercase tracking-widest relative">
             <div class="indicator"></div>
             <span class="relative z-10">Manage Trainee</span>
+        </a>
+
+        {{-- Manage Admin Profile --}}
+        <a href="{{ route('admin.profile.edit') }}" 
+           class="sidebar-link {{ Request::is('admin/profile*') ? 'active-link' : '' }} group flex items-center px-4 py-3.5 rounded transition-all text-[11px] font-black uppercase tracking-widest relative">
+            <div class="indicator"></div>
+             <span class="relative z-10">Manage Profile</span>
         </a>
     </nav>
 
@@ -137,7 +140,7 @@
         <form action="{{ route('logout') }}" method="POST">
             @csrf
             <button type="submit" class="group relative w-full bg-brand-red text-white py-4 rounded-sm font-black text-[10px] uppercase tracking-[0.2em] overflow-hidden shadow-lg">
-                <span class="relative z-10 transition-colors duration-300 group-hover:text-brand-navy">Terminate Session</span>
+                <span class="relative z-10 transition-colors duration-300 group-hover:text-brand-navy">Log Out</span>
                 <div class="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
             </button>
         </form>

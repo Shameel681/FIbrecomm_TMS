@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\TraineeFormController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Trainee\TraineeDashboardController;
@@ -9,16 +10,36 @@ use App\Http\Controllers\Supervisor\SupervisorDashboardController;
 use App\Http\Controllers\HR\HRDashboardController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminSvController;
+use App\Http\Controllers\Admin\AdminTraineeController;
+use App\Http\Controllers\Admin\AdminProfileController;
 
 /*
 |--------------------------------------------------------------------------
 | Public Routes
 |--------------------------------------------------------------------------
 */
-// Using 'guest' middleware instead of 'multi.guest' to prevent login loops
+
 Route::get('/', function () { 
+    if (Auth::check()) {
+        $role = Auth::user()->role;
+        return match($role) {
+            'admin'      => redirect()->route('admin.users.index'),
+            'hr'         => redirect()->route('hr.dashboard'),
+            'supervisor' => redirect()->route('supervisor.dashboard'),
+            'trainee'    => redirect()->route('trainee.dashboard'),
+            default      => redirect()->route('login'),
+        };
+    }
     return view('index'); 
 })->name('home');
+
+/**
+ * FIX: Renamed this route to 'login.redirect'
+ * It was previously named 'login', which conflicted with the actual login page.
+ */
+Route::match(['get', 'post'], '/redirect-to-index', function() {
+    return redirect()->route('home');
+})->name('login.redirect');
 
 Route::post('/apply', [TraineeFormController::class, 'store'])->name('trainee.store');
 
@@ -27,6 +48,7 @@ Route::post('/apply', [TraineeFormController::class, 'store'])->name('trainee.st
 | Authentication Routes
 |--------------------------------------------------------------------------
 */
+
 Route::get('/login', function () { 
     return view('auth.login'); 
 })->name('login')->middleware('guest');
@@ -39,27 +61,33 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 | ADMIN Protected Routes
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    // Command Center
+Route::middleware(['auth', 'role:admin', 'no.cache'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminUserController::class, 'index'])->name('dashboard');
     Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
 
-    // Manage HR Routes (Stay with AdminUserController)
+    // Manage HR
     Route::get('/manage-hr', [AdminUserController::class, 'manageHr'])->name('managehr');
     Route::post('/hr/store', [AdminUserController::class, 'storeHr'])->name('hr.store');
     Route::put('/hr/update/{id}', [AdminUserController::class, 'updateHr'])->name('hr.update'); 
     Route::delete('/hr/{id}', [AdminUserController::class, 'destroyHr'])->name('hr.destroy');
 
-    // Manage Supervisor Routes (MOVED TO AdminSvController)
+    // Manage Supervisor
     Route::get('/manage-sv', [AdminSvController::class, 'manageSv'])->name('managesv');
     Route::post('/sv/store', [AdminSvController::class, 'storeSv'])->name('sv.store');
-    Route::put('/sv/update/{id}', [AdminSvController::class, 'updateSv'])->name('sv.update'); // Added this
+    Route::put('/sv/update/{id}', [AdminSvController::class, 'updateSv'])->name('sv.update');
     Route::delete('/sv/{id}', [AdminSvController::class, 'destroySv'])->name('sv.destroy');
 
-    // Manage Trainee Routes
-    Route::get('/manage-trainee', [AdminUserController::class, 'manageTrainee'])->name('managetrainee');
-    Route::post('/trainee/store', [AdminUserController::class, 'storeTrainee'])->name('trainee.store');
-    Route::delete('/trainee/{id}', [AdminUserController::class, 'destroyTrainee'])->name('trainee.destroy');
+    // Manage Trainee
+    Route::get('/manage-trainee', [AdminTraineeController::class, 'index'])->name('managetrainee');
+    Route::post('/trainee/store', [AdminTraineeController::class, 'store'])->name('trainee.store');
+    Route::put('/trainee/update/{id}', [AdminTraineeController::class, 'update'])->name('trainee.update');
+    Route::delete('/trainee/destroy/{id}', [AdminTraineeController::class, 'destroy'])->name('trainee.destroy');
+
+    // Profile
+    Route::get('/profile', [AdminProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile/update', [AdminProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [AdminProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::post('/emergency-exit', [AdminProfileController::class, 'emergencyExit'])->name('emergency.exit');
 });
 
 /*
@@ -67,7 +95,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 | HR Protected Routes
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:hr'])->prefix('hr')->name('hr.')->group(function () {
+Route::middleware(['auth', 'role:hr', 'no.cache'])->prefix('hr')->name('hr.')->group(function () {
     Route::get('/dashboard', [HRDashboardController::class, 'index'])->name('dashboard');
     Route::get('/applicants', [HRDashboardController::class, 'applicants'])->name('applicants');
     Route::get('/applicants/{id}', [HRDashboardController::class, 'show'])->name('applicants.show');
@@ -88,7 +116,7 @@ Route::middleware(['auth', 'role:hr'])->prefix('hr')->name('hr.')->group(functio
 | Trainee Protected Routes
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:trainee'])->prefix('trainee')->name('trainee.')->group(function () {
+Route::middleware(['auth', 'role:trainee', 'no.cache'])->prefix('trainee')->name('trainee.')->group(function () {
     Route::get('/dashboard', [TraineeDashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
 });
@@ -98,6 +126,6 @@ Route::middleware(['auth', 'role:trainee'])->prefix('trainee')->name('trainee.')
 | Supervisor Protected Routes
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:supervisor'])->prefix('supervisor')->name('supervisor.')->group(function () {
+Route::middleware(['auth', 'role:supervisor', 'no.cache'])->prefix('supervisor')->name('supervisor.')->group(function () {
     Route::get('/dashboard', [SupervisorDashboardController::class, 'index'])->name('dashboard');
 });
