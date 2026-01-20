@@ -15,6 +15,23 @@
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
+    /* Notification Animations */
+        @keyframes slideDown {
+            from { transform: translate(-50%, -100%); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+        
+        .animate-slide-down {
+            position: relative;
+            animation: slideDown 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .fade-out {
+            transition: opacity 0.6s ease, transform 0.6s ease;
+            opacity: 0 !important;
+            transform: translate(-50%, -20px) !important;
+        }
+
     .offering-card:hover {
         background-color: #EF4023; /* brand-red */
         transform: translateY(-10px);
@@ -253,23 +270,41 @@
             <p class="text-gray-500 mt-4 text-sm">Please scroll within the box to complete all fields.</p>
         </div>
 
-        {{-- Success/Error Feedback --}}
-        @if(session('success'))
-            <div id="success-alert" class="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-xl shadow-sm animate-bounce">
-                {{ session('success') }}
-            </div>
-        @endif
+        {{-- Fixed Overlay Notification Container --}}
+        <div id="notification-container" class="fixed top-10 left-1/2 -translate-x-1/2 z-[9999] w-full max-w-md px-4 pointer-events-none">
+            {{-- Success Alert --}}
+            @if(session('success'))
+                <div id="status-alert" class="pointer-events-auto mb-4 p-4 bg-white border-l-4 border-green-500 text-gray-800 rounded-r-xl shadow-2xl flex items-center justify-between animate-slide-down">
+                    <div class="flex items-center">
+                        <div class="bg-green-100 p-2 rounded-full mr-3">
+                            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <p class="font-bold text-sm">{{ session('success') }}</p>
+                    </div>
+                    <button onclick="this.parentElement.remove()" class="ml-4 text-gray-400 hover:text-gray-600 transition-colors">&times;</button>
+                </div>
+            @endif
 
-        @if($errors->any())
-            <div class="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-xl shadow-sm">
-                <p class="font-bold mb-2">Please correct the following errors:</p>
-                <ul class="list-disc list-inside text-sm">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+            {{-- Error Alert --}}
+            @if($errors->any())
+                <div id="status-alert" class="pointer-events-auto mb-4 p-4 bg-white border-l-4 border-brand-red text-gray-800 rounded-r-xl shadow-2xl animate-slide-down">
+                    <div class="flex items-start">
+                        <div class="bg-red-100 p-2 rounded-full mr-3">
+                            <svg class="w-5 h-5 text-brand-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-bold text-sm text-brand-navy">Submission Error</p>
+                            <ul class="text-xs mt-1 list-disc list-inside text-gray-600">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                        <button onclick="this.parentElement.remove()" class="ml-auto text-gray-400 hover:text-gray-600">&times;</button>
+                    </div>
+                </div>
+            @endif
+        </div>
 
         <form action="{{ route('trainee.store') }}" method="POST" enctype="multipart/form-data" class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden">
             @csrf
@@ -515,17 +550,16 @@
 
 
         function initAutoHide() {
-            const alert = document.getElementById('success-alert');
-            if (alert) {
+            const alerts = document.querySelectorAll('#status-alert');
+            alerts.forEach(alert => {
+                // Auto-hide after 7 seconds
                 setTimeout(() => {
-                    alert.style.transition = "opacity 1s ease";
-                    alert.style.opacity = '0';
-                    
+                    alert.classList.add('fade-out');
                     setTimeout(() => {
                         alert.remove();
-                    }, 1000);
-                }, 10000); 
-            }
+                    }, 600);
+                }, 7000); 
+            });
         }
 
 
