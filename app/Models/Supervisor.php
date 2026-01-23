@@ -23,4 +23,9 @@ class Supervisor extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function trainees()
+    {
+    return $this->hasMany(Trainee::class);
+    }
 }

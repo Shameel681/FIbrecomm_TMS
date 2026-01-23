@@ -150,9 +150,10 @@
                     <span class="relative z-10">Manage Trainee</span>
                 </a>
 
-                <a href="#" class="sidebar-link group flex items-center px-4 py-3.5 rounded transition-all opacity-50 hover:opacity-100 text-[11px] font-black uppercase tracking-widest relative">
-                    <div class="indicator"></div>
-                    <span class="relative z-10">Manage Supervisors</span>
+                <a href="{{ route('hr.attendance.assign') }}" 
+                    class="sidebar-link {{ Request::is('hr/assign-supervisor*') ? 'active-link' : '' }} group flex items-center px-4 py-3.5 rounded transition-all text-[11px] font-black uppercase tracking-widest relative">
+                     <div class="indicator"></div>
+                     <span class="relative z-10">Manage Supervisors</span>
                 </a>
 
                 <a href="#" class="sidebar-link group flex items-center px-4 py-3.5 rounded transition-all opacity-50 hover:opacity-100 text-[11px] font-black uppercase tracking-widest relative">

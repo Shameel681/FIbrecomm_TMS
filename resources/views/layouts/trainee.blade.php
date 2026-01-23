@@ -12,7 +12,7 @@
     @vite(['resources/css/index.css', 'resources/js/app.js'])
 
     <style>
-        /* Shared Aesthetic with Admin/HR Console */
+        /* Sidebar Link Styles */
         .sidebar-link {
             position: relative;
             overflow: hidden;
@@ -26,7 +26,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: rgba(239, 64, 35, 0.1); /* Subtle Brand Red */
+            background: rgba(239, 64, 35, 0.1); 
             transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 0;
         }
@@ -35,7 +35,7 @@
 
         .sidebar-link.active-link {
             background: rgba(239, 64, 35, 0.15);
-            color: #EF4023 !important; /* Brand Red */
+            color: #EF4023 !important; 
         }
 
         .sidebar-link .indicator {
@@ -45,7 +45,7 @@
             transform: translateY(-50%) scaleY(0);
             width: 4px;
             height: 70%;
-            background-color: #EF4023; /* Brand Red */
+            background-color: #EF4023; 
             transition: transform 0.3s ease;
             border-radius: 0 4px 4px 0;
         }
@@ -55,6 +55,7 @@
             transform: translateY(-50%) scaleY(1);
         }
 
+        /* Header Logo Animation */
         .logo-container img {
             transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             will-change: transform;
@@ -72,11 +73,7 @@
     <div class="flex min-h-screen">
         
         <aside class="w-64 bg-brand-navy text-white flex flex-col fixed h-full z-50 shadow-2xl">
-            <div class="p-8 border-b border-white/5 text-center">
-                <a href="{{ route('trainee.dashboard') }}" class="logo-container inline-block mb-4">
-                    {{-- FIXED: Removed brightness-200 to restore original colors --}}
-                    <img src="{{ asset('images/logo1.png') }}" alt="Logo" class="h-12 w-auto mx-auto">
-                </a>
+            <div class="p-8 border-b border-white/5">
                 <div class="flex flex-col">
                     <span class="text-brand-red font-black text-xl tracking-tighter uppercase">Trainee Hub</span>
                     <span class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Learning & Growth</span>
@@ -84,21 +81,18 @@
             </div>
 
             <nav class="flex-grow p-4 space-y-2 mt-4">
-                {{-- Home --}}
                 <a href="{{ route('trainee.dashboard') }}" 
                    class="sidebar-link {{ Request::is('trainee/dashboard') ? 'active-link' : '' }} group flex items-center px-4 py-3.5 rounded transition-all text-[11px] font-black uppercase tracking-widest relative">
                     <div class="indicator"></div>
                     <span class="relative z-10">Overview</span>
                 </a>
 
-                {{-- Attendance --}}
                 <a href="{{ route('trainee.attendance.index') }}" 
                    class="sidebar-link {{ Request::is('trainee/attendance*') ? 'active-link' : '' }} group flex items-center px-4 py-3.5 rounded transition-all text-[11px] font-black uppercase tracking-widest relative">
                     <div class="indicator"></div>
                     <span class="relative z-10">My Attendance</span>
                 </a>
 
-                {{-- Profile --}}
                 <a href="{{ route('trainee.profile') }}" 
                    class="sidebar-link {{ Request::is('trainee/profile*') ? 'active-link' : '' }} group flex items-center px-4 py-3.5 rounded transition-all text-[11px] font-black uppercase tracking-widest relative">
                     <div class="indicator"></div>
@@ -120,17 +114,22 @@
         <div class="flex-grow ml-64 flex flex-col">
             
             <header class="flex items-center justify-between px-10 py-6 bg-white border-b border-gray-100 sticky top-0 z-40">
-                <div>
-                    <h1 class="text-xl font-black text-brand-navy tracking-tighter uppercase">
-                        Trainee <span class="text-brand-red">Portal</span>
-                    </h1>
-                    <p class="text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em]">Fibrecomm Network (M) Sdn Bhd</p>
+                <div class="flex items-center gap-6">
+                    <a href="{{ route('trainee.dashboard') }}" class="logo-container h-12 w-auto shrink-0 flex items-center justify-center">
+                        <img src="{{ asset('images/logo1.png') }}" alt="Fibrecomm Logo" class="h-full w-auto object-contain">
+                    </a>
+                    <div class="h-8 w-[1px] bg-gray-200"></div>
+                    <div>
+                        <h1 class="text-xl font-black text-brand-navy tracking-tighter uppercase">
+                            Trainee <span class="text-brand-red">Portal</span>
+                        </h1>
+                        <p class="text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em]">Fibrecomm Network (M) Sdn Bhd</p>
+                    </div>
                 </div>
 
                 <div class="flex items-center gap-4">
                     <div class="text-right">
                         <p class="text-[10px] font-black text-brand-red uppercase tracking-widest">Active Intern</p>
-                        {{-- FIXED: Using standard Auth::user() --}}
                         <p class="text-sm font-bold text-brand-navy">{{ Auth::user()->name ?? 'Trainee' }}</p>
                     </div>
                     <div class="h-10 w-10 bg-brand-navy rounded-sm flex items-center justify-center text-white font-black text-lg shadow-lg border-b-2 border-brand-red">

@@ -20,6 +20,8 @@ use App\Mail\ApplicantApproved;
 use App\Mail\ApplicantRejected;
 use App\Mail\TraineeAccountCreated; 
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Mail\SupervisorAssignedMail;
+use App\Mail\TraineeAssignedMail;
 
 class HRDashboardController extends Controller
 {
@@ -222,18 +224,27 @@ public function showAssignPage()
     $trainees = Trainee::with('supervisor')->get();
     $supervisors = User::where('role', 'supervisor')->get();
 
-    return view('hr.attendance.assign-supervisor', compact('trainees', 'supervisors'));
+    return view('hr.assign-supervisor', compact('trainees', 'supervisors'));
+
 }
 
 public function assignSupervisor(Request $request, $id)
 {
-    $request->validate([
-        'supervisor_id' => 'required|exists:users,id',
+    // 1. Find the trainee and the selected supervisor
+    $trainee = Trainee::findOrFail($id);
+    $supervisor = User::findOrFail($request->supervisor_id);
+
+    // 2. Update the database
+    $trainee->update([
+        'supervisor_id' => $request->supervisor_id
     ]);
 
-    $trainee = Trainee::findOrFail($id);
-    $trainee->update(['supervisor_id' => $request->supervisor_id]);
+    // 3. Send Mail to Supervisor
+    Mail::to($supervisor->email)->send(new SupervisorAssignedMail($trainee, $supervisor));
 
-    return back()->with('success', "Assigned supervisor to {$trainee->name} successfully!");
+    // 4. Send Mail to Trainee
+    Mail::to($trainee->email)->send(new TraineeAssignedMail($trainee, $supervisor));
+
+    return back()->with('success', 'Supervisor assigned and notifications sent successfully!');
 }
 }

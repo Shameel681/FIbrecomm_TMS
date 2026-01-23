@@ -114,7 +114,7 @@ Route::middleware(['auth', 'role:hr', 'no.cache'])->prefix('hr')->name('hr.')->g
     Route::post('/trainees/store-account', [HRDashboardController::class, 'storeAccount'])->name('trainees.store_account');
 
     // STEP 2: Supervisor Assignment Logic
-    Route::get('/attendance/assign-supervisor', [HRDashboardController::class, 'showAssignPage'])->name('attendance.assign_view');
+    Route::get('/assign-supervisor', [HRDashboardController::class, 'showAssignPage'])->name('attendance.assign');
     Route::post('/attendance/assign-supervisor/{id}', [HRDashboardController::class, 'assignSupervisor'])->name('attendance.assign_store');
 });
 
@@ -136,9 +136,16 @@ Route::middleware(['auth', 'role:trainee', 'no.cache'])->prefix('trainee')->name
 | Supervisor Protected Routes
 |--------------------------------------------------------------------------
 */
-    Route::middleware(['auth', 'role:supervisor', 'no.cache'])->prefix('supervisor')->name('supervisor.')->group(function () {
+Route::middleware(['auth', 'role:supervisor', 'no.cache'])->prefix('supervisor')->name('supervisor.')->group(function () {
     Route::get('/dashboard', [SupervisorDashboardController::class, 'index'])->name('dashboard');
     
+    // ADD THESE MISSING ROUTES:
+    Route::get('/trainees', [SupervisorDashboardController::class, 'trainees'])->name('trainees');
+    Route::get('/logbooks', [AttendanceController::class, 'supervisorIndex'])->name('logbooks');
+    Route::get('/profile/edit', [SupervisorDashboardController::class, 'profile'])->name('profile.edit');
+    Route::get('/tasks', [SupervisorDashboardController::class, 'tasks'])->name('tasks');
+
+    // Existing attendance routes
     Route::get('/attendance-approvals', [AttendanceController::class, 'supervisorIndex'])->name('attendance.approvals');
     Route::post('/attendance/approve/{id}', [AttendanceController::class, 'approve'])->name('attendance.approve');
     Route::post('/attendance/reject/{id}', [AttendanceController::class, 'reject'])->name('attendance.reject');
