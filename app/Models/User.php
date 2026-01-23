@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -49,15 +50,25 @@ class User extends Authenticatable
 
     /**
      * Relationship with Trainee Profile
+     * Renamed to 'trainee' to match Controller calls: $user->trainee
      */
-    public function traineeProfile(): HasOne
+    public function trainee(): HasOne
     {
         return $this->hasOne(Trainee::class, 'user_id', 'id');
     }
 
+    /**
+     * For Supervisors: Get assigned trainees
+     */
+    public function subordinates(): HasMany
+    {
+        // A supervisor (User) can have many trainees via supervisor_id in trainees table
+        return $this->hasMany(Trainee::class, 'supervisor_id');
+    }
+
     // Role Checks
-    public function isHR() { return $this->role === 'hr'; }
-    public function isSupervisor() { return $this->role === 'supervisor'; }
-    public function isTrainee() { return $this->role === 'trainee'; }
-    public function isAdmin() { return $this->role === 'admin'; }
+    public function isHR(): bool { return $this->role === 'hr'; }
+    public function isSupervisor(): bool { return $this->role === 'supervisor'; }
+    public function isTrainee(): bool { return $this->role === 'trainee'; }
+    public function isAdmin(): bool { return $this->role === 'admin'; }
 }

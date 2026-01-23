@@ -7,115 +7,153 @@
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
-    
-    {{-- AOS CSS for Entrance Animations --}}
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
     @vite(['resources/css/index.css', 'resources/js/app.js'])
 
     <style>
-        .nav-link-anim { position: relative; }
-        .nav-link-anim::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 3px;
-            bottom: 0;
-            left: 50%;
-            background-color: #EF4023;
-            transition: all 0.3s ease-in-out;
-            transform: translateX(-50%);
-        }
-        /* Keep underline visible if link is hovered OR if it's the active page */
-        .nav-link-anim:hover::after, 
-        .nav-link-active::after { 
-            width: 100%; 
+        /* Shared Aesthetic with Admin/HR Console */
+        .sidebar-link {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
         }
 
-        /* --- LOGO HOVER ANIMATION --- */
-        .logo-anim img {
+        .sidebar-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(239, 64, 35, 0.1); /* Subtle Brand Red */
+            transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 0;
+        }
+
+        .sidebar-link:hover::before { left: 0; }
+
+        .sidebar-link.active-link {
+            background: rgba(239, 64, 35, 0.15);
+            color: #EF4023 !important; /* Brand Red */
+        }
+
+        .sidebar-link .indicator {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%) scaleY(0);
+            width: 4px;
+            height: 70%;
+            background-color: #EF4023; /* Brand Red */
+            transition: transform 0.3s ease;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .sidebar-link:hover .indicator,
+        .sidebar-link.active-link .indicator {
+            transform: translateY(-50%) scaleY(1);
+        }
+
+        .logo-container img {
             transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             will-change: transform;
         }
+        .logo-container:hover img { transform: scale(1.1); }
 
-        .logo-anim:hover img {
-            transform: scale(1.1);
-        }
-
-        .logo-anim:active img {
-            transform: scale(0.95);
-        }
-        /* ---------------------------- */
-
-        /* Smooth entrance for the main container */
-        [data-aos] { pointer-events: none; }
-        .aos-animate { pointer-events: auto; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #001f3f; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #EF4023; }
     </style>
 </head>
-<body class="bg-gray-200 py-10 font-sans antialiased">
-
-    <div class="mx-auto max-w-[1100px] bg-white shadow-2xl rounded-sm min-h-[90vh] flex flex-col" data-aos="fade-in" data-aos-duration="800">
+<body class="bg-gray-50 font-sans antialiased">
+    
+    <div class="flex min-h-screen">
         
-        <header class="flex items-center gap-5 px-10 py-7 bg-white">
-            <a href="{{ route('trainee.dashboard') }}" class="logo-anim h-16 w-auto shrink-0 flex items-center justify-center">
-                <img src="{{ asset('images/logo1.png') }}" alt="Fibrecomm Logo" class="h-full w-auto object-contain">
-            </a>
-            <h1 class="text-[28px] font-bold text-brand-navy tracking-tight">Trainee Management Portal</h1>
-        </header>
-
-        <nav class="bg-brand-navy text-white sticky top-0 z-50 shadow-md">
-            <div class="flex items-center justify-between px-10">
-                <div class="flex items-center uppercase text-[13px] tracking-widest font-bold h-full">
-                    {{-- Home Link --}}
-                    <a href="{{ route('trainee.dashboard') }}" 
-                       class="nav-link-anim {{ Request::is('trainee/dashboard') ? 'nav-link-active' : '' }} py-6 px-8 hover:bg-white/5 transition-colors">
-                        Home
-                    </a>
-
-                    {{-- Attendance Link --}}
-                    <a href="#" 
-                       class="nav-link-anim {{ Request::is('trainee/attendance*') ? 'nav-link-active' : '' }} py-6 px-8 hover:bg-white/5 transition-colors">
-                        Attendance
-                    </a>
-
-                    {{-- Profile Link --}}
-                    <a href="{{ route('trainee.profile') }}" 
-                       class="nav-link-anim {{ Request::is('trainee/profile') ? 'nav-link-active' : '' }} py-6 px-8 hover:bg-white/5 transition-colors">
-                        Profile
-                    </a>
-                </div>
-
-                <div class="flex items-center gap-6">
-                    <span class="text-[11px] uppercase tracking-widest text-gray-300 hidden md:block">
-                        Welcome, {{ Auth::guard('trainee')->user()->name }}
-                    </span>
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="bg-brand-red text-white px-6 py-2 rounded font-bold text-[12px] uppercase tracking-widest hover:bg-white hover:text-brand-navy transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg">
-                            Logout
-                        </button>
-                    </form>
+        <aside class="w-64 bg-brand-navy text-white flex flex-col fixed h-full z-50 shadow-2xl">
+            <div class="p-8 border-b border-white/5 text-center">
+                <a href="{{ route('trainee.dashboard') }}" class="logo-container inline-block mb-4">
+                    {{-- FIXED: Removed brightness-200 to restore original colors --}}
+                    <img src="{{ asset('images/logo1.png') }}" alt="Logo" class="h-12 w-auto mx-auto">
+                </a>
+                <div class="flex flex-col">
+                    <span class="text-brand-red font-black text-xl tracking-tighter uppercase">Trainee Hub</span>
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Learning & Growth</span>
                 </div>
             </div>
-        </nav>
 
-        <main class="flex-grow p-10 bg-gray-50">
-            @yield('content')
-        </main>
+            <nav class="flex-grow p-4 space-y-2 mt-4">
+                {{-- Home --}}
+                <a href="{{ route('trainee.dashboard') }}" 
+                   class="sidebar-link {{ Request::is('trainee/dashboard') ? 'active-link' : '' }} group flex items-center px-4 py-3.5 rounded transition-all text-[11px] font-black uppercase tracking-widest relative">
+                    <div class="indicator"></div>
+                    <span class="relative z-10">Overview</span>
+                </a>
 
-        <footer class="bg-brand-navy text-white py-8 text-center text-xs uppercase tracking-widest font-bold border-t border-white/10">
-            <p>&copy; {{ date('Y') }} Fibrecomm Network (M) Sdn Bhd.</p>
-        </footer>
+                {{-- Attendance --}}
+                <a href="{{ route('trainee.attendance.index') }}" 
+                   class="sidebar-link {{ Request::is('trainee/attendance*') ? 'active-link' : '' }} group flex items-center px-4 py-3.5 rounded transition-all text-[11px] font-black uppercase tracking-widest relative">
+                    <div class="indicator"></div>
+                    <span class="relative z-10">My Attendance</span>
+                </a>
+
+                {{-- Profile --}}
+                <a href="{{ route('trainee.profile') }}" 
+                   class="sidebar-link {{ Request::is('trainee/profile*') ? 'active-link' : '' }} group flex items-center px-4 py-3.5 rounded transition-all text-[11px] font-black uppercase tracking-widest relative">
+                    <div class="indicator"></div>
+                    <span class="relative z-10">My Profile</span>
+                </a>
+            </nav>
+
+            <div class="p-6 border-t border-white/5">
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="group relative w-full bg-brand-red text-white py-4 rounded-sm font-black text-[10px] uppercase tracking-[0.2em] overflow-hidden shadow-lg">
+                        <span class="relative z-10 transition-colors duration-300 group-hover:text-brand-navy">Log Out</span>
+                        <div class="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <div class="flex-grow ml-64 flex flex-col">
+            
+            <header class="flex items-center justify-between px-10 py-6 bg-white border-b border-gray-100 sticky top-0 z-40">
+                <div>
+                    <h1 class="text-xl font-black text-brand-navy tracking-tighter uppercase">
+                        Trainee <span class="text-brand-red">Portal</span>
+                    </h1>
+                    <p class="text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em]">Fibrecomm Network (M) Sdn Bhd</p>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <div class="text-right">
+                        <p class="text-[10px] font-black text-brand-red uppercase tracking-widest">Active Intern</p>
+                        {{-- FIXED: Using standard Auth::user() --}}
+                        <p class="text-sm font-bold text-brand-navy">{{ Auth::user()->name ?? 'Trainee' }}</p>
+                    </div>
+                    <div class="h-10 w-10 bg-brand-navy rounded-sm flex items-center justify-center text-white font-black text-lg shadow-lg border-b-2 border-brand-red">
+                        {{ substr(Auth::user()->name ?? 'T', 0, 1) }}
+                    </div>
+                </div>
+            </header>
+
+            <main class="p-10 flex-grow">
+                @yield('content')
+            </main>
+
+            <footer class="bg-white border-t py-8 px-10 text-center">
+                <p class="text-[10px] text-gray-400 uppercase tracking-[0.4em] font-black">
+                    &copy; {{ date('Y') }} Fibrecomm Network (M) Sdn Bhd | Trainee System
+                </p>
+            </footer>
+        </div>
     </div>
 
-    {{-- AOS JS Initialization --}}
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        AOS.init({
-            duration: 800,
-            easing: 'ease-out-back',
-            once: true 
-        });
+        AOS.init({ duration: 800, once: true, easing: 'ease-out-back' });
     </script>
 </body>
 </html>

@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminSvController;
 use App\Http\Controllers\Admin\AdminTraineeController;
 use App\Http\Controllers\Admin\AdminProfileController;
+use App\Http\Controllers\AttendanceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -99,16 +100,22 @@ Route::middleware(['auth', 'role:hr', 'no.cache'])->prefix('hr')->name('hr.')->g
     Route::get('/dashboard', [HRDashboardController::class, 'index'])->name('dashboard');
     Route::get('/applicants', [HRDashboardController::class, 'applicants'])->name('applicants');
     Route::get('/applicants/{id}', [HRDashboardController::class, 'show'])->name('applicants.show');
+    
+    // Approval/Rejection & Downloads
+    Route::post('/applicants/approve/{id}', [HRDashboardController::class, 'approve'])->name('applicants.approve');
+    Route::post('/applicants/reject/{id}', [HRDashboardController::class, 'reject'])->name('applicants.reject');
     Route::get('/applicants/download-form/{id}', [HRDashboardController::class, 'downloadApplicantForm'])->name('applicants.downloadForm');
     Route::get('/applicants/download-cv/{id}', [HRDashboardController::class, 'downloadCV'])->name('applicants.downloadCV');
     Route::get('/applicants/download-letter/{id}', [HRDashboardController::class, 'downloadLetter'])->name('applicants.downloadLetter');
-    
-    Route::post('/applicants/approve/{id}', [HRDashboardController::class, 'approve'])->name('applicants.approve');
-    Route::post('/applicants/reject/{id}', [HRDashboardController::class, 'reject'])->name('applicants.reject');
     Route::delete('/applicants/{id}', [HRDashboardController::class, 'destroy'])->name('applicants.destroy');
 
+    // Trainee Management
     Route::get('/trainees', [HRDashboardController::class, 'manageTrainees'])->name('trainees');
     Route::post('/trainees/store-account', [HRDashboardController::class, 'storeAccount'])->name('trainees.store_account');
+
+    // STEP 2: Supervisor Assignment Logic
+    Route::get('/attendance/assign-supervisor', [HRDashboardController::class, 'showAssignPage'])->name('attendance.assign_view');
+    Route::post('/attendance/assign-supervisor/{id}', [HRDashboardController::class, 'assignSupervisor'])->name('attendance.assign_store');
 });
 
 /*
@@ -119,6 +126,9 @@ Route::middleware(['auth', 'role:hr', 'no.cache'])->prefix('hr')->name('hr.')->g
 Route::middleware(['auth', 'role:trainee', 'no.cache'])->prefix('trainee')->name('trainee.')->group(function () {
     Route::get('/dashboard', [TraineeDashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+
+    Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
+    Route::post('/attendance/clock-in', [AttendanceController::class, 'clockIn'])->name('attendance.clockIn');
 });
 
 /*
@@ -126,6 +136,10 @@ Route::middleware(['auth', 'role:trainee', 'no.cache'])->prefix('trainee')->name
 | Supervisor Protected Routes
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:supervisor', 'no.cache'])->prefix('supervisor')->name('supervisor.')->group(function () {
+    Route::middleware(['auth', 'role:supervisor', 'no.cache'])->prefix('supervisor')->name('supervisor.')->group(function () {
     Route::get('/dashboard', [SupervisorDashboardController::class, 'index'])->name('dashboard');
+    
+    Route::get('/attendance-approvals', [AttendanceController::class, 'supervisorIndex'])->name('attendance.approvals');
+    Route::post('/attendance/approve/{id}', [AttendanceController::class, 'approve'])->name('attendance.approve');
+    Route::post('/attendance/reject/{id}', [AttendanceController::class, 'reject'])->name('attendance.reject');
 });

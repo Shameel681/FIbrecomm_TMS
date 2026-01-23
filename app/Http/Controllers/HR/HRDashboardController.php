@@ -215,4 +215,25 @@ class HRDashboardController extends Controller
         return redirect()->back()->withErrors(['error' => 'Creation failed: ' . $e->getMessage()]);
     }
 }
+
+public function showAssignPage()
+{
+    // Fetch trainees who don't have a supervisor yet, or all for re-assignment
+    $trainees = Trainee::with('supervisor')->get();
+    $supervisors = User::where('role', 'supervisor')->get();
+
+    return view('hr.attendance.assign-supervisor', compact('trainees', 'supervisors'));
+}
+
+public function assignSupervisor(Request $request, $id)
+{
+    $request->validate([
+        'supervisor_id' => 'required|exists:users,id',
+    ]);
+
+    $trainee = Trainee::findOrFail($id);
+    $trainee->update(['supervisor_id' => $request->supervisor_id]);
+
+    return back()->with('success', "Assigned supervisor to {$trainee->name} successfully!");
+}
 }
