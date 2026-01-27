@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Trainee;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use App\Models\Trainee;
 use Carbon\Carbon;
 
@@ -46,5 +49,58 @@ class ProfileController extends Controller
             'trainee' => $trainee,
             'daysLeft' => $daysLeft,
         ]);
+    }
+
+    /**
+     * Show the form for editing the trainee's profile.
+     */
+    public function edit()
+    {
+        $user = Auth::user();
+        $trainee = Trainee::where('email', $user->email)->first();
+
+        return view('trainee.profile-edit', [
+            'user' => $user,
+            'trainee' => $trainee,
+        ]);
+    }
+
+    /**
+     * Update the trainee's profile information.
+     */
+    public function update()
+    {
+        $user = Auth::user();
+        $trainee = Trainee::where('email', $user->email)->first();
+
+        // Validate the input
+        $validated = request()->validate([
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('users')->ignore($user->id),
+            ],
+            'password' => ['nullable', Password::defaults()],
+            'current_password' => ['required_with:password', 'current_password'],
+        ]);
+
+        // Update email if changed
+        if ($validated['email'] !== $user->email) {
+            $user->email = $validated['email'];
+            if ($trainee) {
+                $trainee->email = $validated['email'];
+                $trainee->save();
+            }
+        }
+
+        // Update password if provided
+        if (!empty($validated['password'])) {
+            $user->password = Hash::make($validated['password']);
+        }
+
+        $user->save();
+
+        return redirect()->route('trainee.profile')
+            ->with('success', 'Profile updated successfully!');
     }
 }

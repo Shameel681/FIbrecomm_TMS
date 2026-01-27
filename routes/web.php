@@ -126,6 +126,8 @@ Route::middleware(['auth', 'role:hr', 'no.cache'])->prefix('hr')->name('hr.')->g
 Route::middleware(['auth', 'role:trainee', 'no.cache'])->prefix('trainee')->name('trainee.')->group(function () {
     Route::get('/dashboard', [TraineeDashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 
     Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
     Route::post('/attendance/clock-in', [AttendanceController::class, 'clockIn'])->name('attendance.clockIn');
