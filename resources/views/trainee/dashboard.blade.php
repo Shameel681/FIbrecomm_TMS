@@ -1,7 +1,7 @@
 @extends('layouts.trainee')
 
 @section('content')
-<div class="container mx-auto px-6 py-8">
+<div class="container mx-auto px-6 py-8" data-aos="fade-up">
     <div class="space-y-8">
         
         {{-- Header Profile Card --}}

@@ -5,9 +5,11 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\TraineeFormController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Trainee\TraineeDashboardController;
+use App\Http\Controllers\Trainee\MonthlyAttendanceController;
 use App\Http\Controllers\Trainee\ProfileController;
 use App\Http\Controllers\Supervisor\SupervisorDashboardController;
 use App\Http\Controllers\HR\HRDashboardController;
+use App\Http\Controllers\HR\TraineeMonthlyController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminSvController;
 use App\Http\Controllers\Admin\AdminTraineeController;
@@ -116,6 +118,10 @@ Route::middleware(['auth', 'role:hr', 'no.cache'])->prefix('hr')->name('hr.')->g
     // STEP 2: Supervisor Assignment Logic
     Route::get('/assign-supervisor', [HRDashboardController::class, 'showAssignPage'])->name('attendance.assign');
     Route::post('/attendance/assign-supervisor/{id}', [HRDashboardController::class, 'assignSupervisor'])->name('attendance.assign_store');
+    
+    // Trainee Monthly Attendance Overview for HR
+    Route::get('/submissions/trainee-monthly', [TraineeMonthlyController::class, 'index'])->name('submissions.traineeMonthly');
+    Route::get('/submissions/trainee-monthly/export/{trainee}', [TraineeMonthlyController::class, 'exportPdf'])->name('submissions.traineeMonthly.export');
 });
 
 /*
@@ -131,6 +137,11 @@ Route::middleware(['auth', 'role:trainee', 'no.cache'])->prefix('trainee')->name
 
     Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
     Route::post('/attendance/clock-in', [AttendanceController::class, 'clockIn'])->name('attendance.clockIn');
+
+    // Monthly attendance summary + submit to HR (per trainee)
+    Route::get('/monthly-attendance', [MonthlyAttendanceController::class, 'index'])->name('monthly.index');
+    Route::post('/monthly-attendance', [MonthlyAttendanceController::class, 'store'])->name('monthly.store');
+    Route::get('/monthly-attendance/export', [MonthlyAttendanceController::class, 'exportPdf'])->name('monthly.export');
 });
 
 /*

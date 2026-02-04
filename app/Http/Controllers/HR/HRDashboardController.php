@@ -220,29 +220,45 @@ class HRDashboardController extends Controller
 
 public function showAssignPage()
 {
-    // Fetch trainees who don't have a supervisor yet, or all for re-assignment
+    // Fetch all trainees with their current supervisor
     $trainees = Trainee::with('supervisor')->get();
+
+    // All supervisor user accounts
     $supervisors = User::where('role', 'supervisor')->get();
 
-    return view('hr.assign-supervisor', compact('trainees', 'supervisors'));
+    // Supervisors that are already linked to any trainee (one trainee per supervisor rule)
+    $assignedSupervisorIds = Trainee::whereNotNull('supervisor_id')
+        ->pluck('supervisor_id')
+        ->toArray();
 
+    return view('hr.assign-supervisor', compact('trainees', 'supervisors', 'assignedSupervisorIds'));
 }
 
 public function assignSupervisor(Request $request, $id)
 {
-    // 1. Find the trainee and the selected supervisor
-    $trainee = Trainee::findOrFail($id);
-    $supervisor = User::findOrFail($request->supervisor_id);
-
-    // 2. Update the database
-    $trainee->update([
-        'supervisor_id' => $request->supervisor_id
+    $request->validate([
+        'supervisor_id' => ['required', 'exists:users,id'],
     ]);
 
-    // 3. Send Mail to Supervisor
-    Mail::to($supervisor->email)->send(new SupervisorAssignedMail($trainee, $supervisor));
+    $trainee = Trainee::findOrFail($id);
+    $supervisor = User::where('role', 'supervisor')->findOrFail($request->supervisor_id);
 
-    // 4. Send Mail to Trainee
+    // Enforce: one trainee per supervisor.
+    $alreadyHasTrainee = Trainee::where('supervisor_id', $supervisor->id)
+        ->where('id', '!=', $trainee->id)
+        ->exists();
+
+    if ($alreadyHasTrainee) {
+        return back()->with('error', 'This supervisor is already assigned to another trainee.');
+    }
+
+    // Update the trainee's supervisor assignment
+    $trainee->update([
+        'supervisor_id' => $supervisor->id,
+    ]);
+
+    // Notify both parties
+    Mail::to($supervisor->email)->send(new SupervisorAssignedMail($trainee, $supervisor));
     Mail::to($trainee->email)->send(new TraineeAssignedMail($trainee, $supervisor));
 
     return back()->with('success', 'Supervisor assigned and notifications sent successfully!');

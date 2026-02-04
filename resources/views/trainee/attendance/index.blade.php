@@ -1,7 +1,7 @@
 @extends('layouts.trainee')
 
 @section('content')
-<div class="container mx-auto px-6 py-8">
+<div class="container mx-auto px-6 py-8" data-aos="fade-up">
     <h3 class="text-gray-700 text-3xl font-medium text-brand-navy">Attendance Management</h3>
 
     {{-- Top Section: Daily Action --}}

@@ -156,9 +156,10 @@
                      <span class="relative z-10">Manage Supervisors</span>
                 </a>
 
-                <a href="#" class="sidebar-link group flex items-center px-4 py-3.5 rounded transition-all opacity-50 hover:opacity-100 text-[11px] font-black uppercase tracking-widest relative">
+                <a href="{{ route('hr.submissions.traineeMonthly') }}" 
+                   class="sidebar-link {{ Request::is('hr/submissions/trainee-monthly*') ? 'active-link' : '' }} group flex items-center px-4 py-3.5 rounded transition-all text-[11px] font-black uppercase tracking-widest relative">
                     <div class="indicator"></div>
-                    <span class="relative z-10">Reports</span>
+                    <span class="relative z-10">Monthly Attendance</span>
                 </a>
             </nav>
 

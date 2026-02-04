@@ -56,10 +56,21 @@
                                 @csrf
                                 <div class="relative w-64">
                                     <select name="supervisor_id" class="w-full appearance-none bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-bold text-brand-navy focus:ring-2 focus:ring-brand-red focus:border-transparent outline-none transition-all cursor-pointer">
-                                        <option value="" disabled selected>Select Supervisor Unit</option>
+                                        <option value="" disabled {{ !$trainee->supervisor_id ? 'selected' : '' }}>Select Supervisor Unit</option>
                                         @foreach($supervisors as $sv)
-                                            <option value="{{ $sv->id }}" {{ $trainee->supervisor_id == $sv->id ? 'selected' : '' }}>
+                                            @php
+                                                $isAssigned = in_array($sv->id, $assignedSupervisorIds ?? []);
+                                                $isCurrent  = $trainee->supervisor_id == $sv->id;
+                                            @endphp
+                                            <option 
+                                                value="{{ $sv->id }}" 
+                                                {{ $isCurrent ? 'selected' : '' }}
+                                                {{ $isAssigned && !$isCurrent ? 'disabled' : '' }}
+                                            >
                                                 {{ $sv->name }} ({{ $sv->department ?? 'General' }})
+                                                @if($isAssigned && !$isCurrent)
+                                                    - Already assigned
+                                                @endif
                                             </option>
                                         @endforeach
                                     </select>

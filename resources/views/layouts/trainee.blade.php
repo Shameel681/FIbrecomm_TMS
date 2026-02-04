@@ -90,7 +90,13 @@
                 <a href="{{ route('trainee.attendance.index') }}" 
                    class="sidebar-link {{ Request::is('trainee/attendance*') ? 'active-link' : '' }} group flex items-center px-4 py-3.5 rounded transition-all text-[11px] font-black uppercase tracking-widest relative">
                     <div class="indicator"></div>
-                    <span class="relative z-10">My Attendance</span>
+                    <span class="relative z-10">Daily Attendance</span>
+                </a>
+
+                <a href="{{ route('trainee.monthly.index') }}" 
+                   class="sidebar-link {{ Request::is('trainee/monthly-attendance*') ? 'active-link' : '' }} group flex items-center px-4 py-3.5 rounded transition-all text-[11px] font-black uppercase tracking-widest relative">
+                    <div class="indicator"></div>
+                    <span class="relative z-10">Monthly Report</span>
                 </a>
 
                 <a href="{{ route('trainee.profile') }}" 
