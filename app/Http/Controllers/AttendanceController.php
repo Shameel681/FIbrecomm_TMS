@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Attendance;
+use App\Models\Trainee;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AttendanceController extends Controller
 {
@@ -93,7 +95,24 @@ class AttendanceController extends Controller
         ->orderBy('date', 'desc')
         ->get();
 
-        return view('supervisor.attendance.approvals', compact('pendingAttendances'));
+        // Fetch all assigned trainees with their attendance data for calendar view
+        $assignedTrainees = Trainee::where('supervisor_id', $supervisorId)
+            ->with(['attendances', 'user'])
+            ->get()
+            ->map(function ($trainee) {
+                // Group attendances by date
+                $trainee->calendarByDate = $trainee->attendances->groupBy(function ($attendance) {
+                    return Carbon::parse($attendance->date)->toDateString();
+                });
+                
+                // Parse start and end dates
+                $trainee->startDate = $trainee->start_date ? Carbon::parse($trainee->start_date) : null;
+                $trainee->endDate = $trainee->end_date ? Carbon::parse($trainee->end_date) : null;
+                
+                return $trainee;
+            });
+
+        return view('supervisor.attendance.approvals', compact('pendingAttendances', 'assignedTrainees'));
     }
 
     /**
@@ -134,5 +153,46 @@ class AttendanceController extends Controller
         ]);
 
         return back()->with('success', 'Attendance rejected.');
+    }
+
+    /**
+     * Supervisor Action: Export a trainee's monthly attendance summary as PDF.
+     * Uses the same PDF layout as HR / Trainee monthly exports.
+     */
+    public function exportMonthlyPdf(Request $request, Trainee $trainee)
+    {
+        $supervisorId = Auth::id();
+
+        // Only allow export if this trainee is actually assigned to the logged-in supervisor
+        if ((int) $trainee->supervisor_id !== (int) $supervisorId) {
+            abort(403, 'You are not authorized to export this trainee\'s attendance.');
+        }
+
+        $month = (int) $request->get('month');
+        $year  = (int) $request->get('year');
+
+        if (!$month || !$year) {
+            return redirect()
+                ->back()
+                ->with('error', 'Please select a month before exporting the summary.');
+        }
+
+        $records = Attendance::where('trainee_id', $trainee->id)
+            ->whereYear('date', $year)
+            ->whereMonth('date', $month)
+            ->orderBy('date', 'asc')
+            ->get();
+
+        $selectedDate = Carbon::create($year, $month, 1);
+
+        $pdf = Pdf::loadView('hr.submissions.trainee_monthly_pdf', [
+            'trainee'      => $trainee,
+            'records'      => $records,
+            'selectedDate' => $selectedDate,
+        ])->setPaper('a4', 'portrait');
+
+        $fileName = 'Trainee_Attendance_'.$trainee->name.'_'.$selectedDate->format('M_Y').'.pdf';
+
+        return $pdf->download($fileName);
     }
 }

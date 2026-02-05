@@ -106,6 +106,12 @@
                     <div class="indicator"></div>
                     <span class="relative z-10">Manage Trainees</span>
                 </a>
+
+                <a href="{{ route('supervisor.profile.edit') }}" 
+                   class="sidebar-link {{ Request::is('supervisor/profile*') ? 'active-link' : '' }} group flex items-center px-4 py-3.5 rounded transition-all text-[11px] font-black uppercase tracking-widest relative">
+                    <div class="indicator"></div>
+                    <span class="relative z-10">Manage Profile</span>
+                </a>
             </nav>
 
             <div class="p-6 border-t border-white/5">
@@ -168,5 +174,8 @@
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>AOS.init({ duration: 800, once: true, easing: 'ease-out-back' });</script>
+
+    {{-- Page-specific scripts --}}
+    @stack('scripts')
 </body>
 </html>

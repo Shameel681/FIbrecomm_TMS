@@ -28,17 +28,30 @@ class SupervisorDashboardController extends Controller
      */
     public function trainees()
     {
-        // Fetch trainees assigned to the logged-in supervisor
-        $trainees = Trainee::where('supervisor_id', Auth::id())->get();
+        // Fetch trainees assigned to the logged-in supervisor with all related data
+        $trainees = Trainee::where('supervisor_id', Auth::id())
+            ->with(['applicationDetails', 'attendances'])
+            ->get()
+            ->map(function ($trainee) {
+                // Add attendance statistics
+                $trainee->total_attendances = $trainee->attendances->count();
+                $trainee->approved_attendances = $trainee->attendances->where('status', 'approved')->count();
+                $trainee->pending_attendances = $trainee->attendances->where('status', 'pending')->count();
+                $trainee->rejected_attendances = $trainee->attendances->where('status', 'rejected')->count();
+                
+                // Calculate days remaining
+                if ($trainee->end_date) {
+                    $endDate = \Carbon\Carbon::parse($trainee->end_date)->startOfDay();
+                    $now = \Carbon\Carbon::now()->startOfDay();
+                    $trainee->days_remaining = max(0, (int) $now->diffInDays($endDate, false));
+                } else {
+                    $trainee->days_remaining = null;
+                }
+                
+                return $trainee;
+            });
 
-        // NOTE: This currently triggers a "View not found" error because the file is missing 
         return view('supervisor.trainees', compact('trainees'));
-    }
-
-    public function profile()
-    {
-        $user = Auth::user();
-        return view('supervisor.profile_edit', compact('user'));
     }
 
     public function tasks()

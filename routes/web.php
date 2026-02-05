@@ -8,6 +8,7 @@ use App\Http\Controllers\Trainee\TraineeDashboardController;
 use App\Http\Controllers\Trainee\MonthlyAttendanceController;
 use App\Http\Controllers\Trainee\ProfileController;
 use App\Http\Controllers\Supervisor\SupervisorDashboardController;
+use App\Http\Controllers\Supervisor\SupervisorProfileController;
 use App\Http\Controllers\HR\HRDashboardController;
 use App\Http\Controllers\HR\TraineeMonthlyController;
 use App\Http\Controllers\Admin\AdminUserController;
@@ -152,14 +153,16 @@ Route::middleware(['auth', 'role:trainee', 'no.cache'])->prefix('trainee')->name
 Route::middleware(['auth', 'role:supervisor', 'no.cache'])->prefix('supervisor')->name('supervisor.')->group(function () {
     Route::get('/dashboard', [SupervisorDashboardController::class, 'index'])->name('dashboard');
     
-    // ADD THESE MISSING ROUTES:
     Route::get('/trainees', [SupervisorDashboardController::class, 'trainees'])->name('trainees');
     Route::get('/logbooks', [AttendanceController::class, 'supervisorIndex'])->name('logbooks');
-    Route::get('/profile/edit', [SupervisorDashboardController::class, 'profile'])->name('profile.edit');
+    Route::get('/profile', [SupervisorProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [SupervisorProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [SupervisorProfileController::class, 'updatePassword'])->name('profile.password');
     Route::get('/tasks', [SupervisorDashboardController::class, 'tasks'])->name('tasks');
 
     // Existing attendance routes
     Route::get('/attendance-approvals', [AttendanceController::class, 'supervisorIndex'])->name('attendance.approvals');
+    Route::get('/attendance/export-monthly/{trainee}', [AttendanceController::class, 'exportMonthlyPdf'])->name('attendance.exportMonthly');
     Route::post('/attendance/approve/{id}', [AttendanceController::class, 'approve'])->name('attendance.approve');
     Route::post('/attendance/reject/{id}', [AttendanceController::class, 'reject'])->name('attendance.reject');
 });
