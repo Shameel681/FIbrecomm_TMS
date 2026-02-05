@@ -38,4 +38,9 @@ class Trainee extends Model
     {
         return $this->hasMany(Attendance::class);
     }
+
+    public function monthlySubmissions(): HasMany
+    {
+        return $this->hasMany(MonthlySubmission::class);
+    }
 }

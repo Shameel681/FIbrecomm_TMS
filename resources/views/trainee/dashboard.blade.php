@@ -1,5 +1,7 @@
 @extends('layouts.trainee')
 
+@section('header_title', 'Dashboard')
+
 @section('content')
 <div class="container mx-auto px-6 py-8" data-aos="fade-up">
     <div class="space-y-8">

@@ -62,6 +62,7 @@
         }
         .logo-container:hover img { transform: scale(1.1); }
 
+        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #001f3f; border-radius: 4px; }
@@ -76,7 +77,7 @@
             <div class="p-8 border-b border-white/5">
                 <div class="flex flex-col">
                     <span class="text-brand-red font-black text-xl tracking-tighter uppercase">Trainee Hub</span>
-                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Learning & Growth</span>
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Trainee Management System</span>
                 </div>
             </div>
 
@@ -110,7 +111,7 @@
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
                     <button type="submit" class="group relative w-full bg-brand-red text-white py-4 rounded-sm font-black text-[10px] uppercase tracking-[0.2em] overflow-hidden shadow-lg">
-                        <span class="relative z-10 transition-colors duration-300 group-hover:text-brand-navy">Log Out</span>
+                        <span class="relative z-10 transition-colors duration-300 group-hover:text-brand-navy">LOG OUT</span>
                         <div class="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
                     </button>
                 </form>
@@ -143,6 +144,20 @@
                     </div>
                 </div>
             </header>
+
+            <nav class="bg-brand-navy text-white sticky top-[80px] z-30 shadow-xl">
+                <div class="flex items-center px-10">
+                    <div class="flex items-center uppercase text-[11px] tracking-[0.2em] font-black">
+                        <div class="relative py-5 px-6 bg-white/5 border-r border-white/5">
+                            <span class="text-brand-red">Active Page:</span> @yield('header_title', 'Dashboard')
+                        </div>
+                        <div class="py-5 px-6 opacity-50 flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+                            Student Status: Active
+                        </div>
+                    </div>
+                </div>
+            </nav>
 
             <main class="p-10 flex-grow">
                 @yield('content')

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\HR;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
+use App\Models\MonthlySubmission;
 use App\Models\Trainee;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -31,6 +32,12 @@ class TraineeMonthlyController extends Controller
         $calendarByDate  = collect();
         $selectedDate    = $periodChosen ? Carbon::create((int) $year, (int) $month, 1) : null;
 
+        // Fetch unread monthly submissions for notifications
+        $unreadSubmissions = MonthlySubmission::where('is_read', false)
+            ->with('trainee')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         if ($periodChosen) {
             $month = (int) $month;
             $year  = (int) $year;
@@ -48,6 +55,14 @@ class TraineeMonthlyController extends Controller
 
                     $trainee->monthly_records_count = $records->count();
                     $trainee->monthly_approved_count = $records->where('status', 'approved')->count();
+
+                    // Check if this trainee has submitted for this period
+                    $submission = MonthlySubmission::where('trainee_id', $trainee->id)
+                        ->where('month', $month)
+                        ->where('year', $year)
+                        ->first();
+                    $trainee->has_submitted = $submission !== null;
+                    $trainee->submission_is_unread = $submission && !$submission->is_read;
 
                     return $trainee;
                 });
@@ -68,6 +83,12 @@ class TraineeMonthlyController extends Controller
                     $calendarByDate = $traineeRecords->groupBy(function ($record) {
                         return Carbon::parse($record->date)->toDateString();
                     });
+
+                    // Mark submission as read when HR views the trainee's details
+                    MonthlySubmission::where('trainee_id', $selectedTrainee->id)
+                        ->where('month', $month)
+                        ->where('year', $year)
+                        ->update(['is_read' => true]);
                 }
             }
         }
@@ -82,6 +103,7 @@ class TraineeMonthlyController extends Controller
             'year'              => $year,
             'selectedDate'      => $selectedDate,
             'selectedTraineeId' => $selectedTraineeId,
+            'unreadSubmissions' => $unreadSubmissions,
         ]);
     }
 

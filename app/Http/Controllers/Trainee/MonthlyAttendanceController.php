@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Trainee;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
+use App\Models\MonthlySubmission;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -53,15 +54,41 @@ class MonthlyAttendanceController extends Controller
     }
 
     /**
-     * Placeholder submit handler – flashes success for now.
-     * Later you can persist a real monthly submission record.
+     * Submit monthly attendance report to HR.
+     * Creates a submission record that HR will be notified about.
      */
     public function store(Request $request)
     {
+        $user = Auth::user();
+        $trainee = $user->trainee ?? null;
+
+        if (!$trainee) {
+            abort(403, 'User is not linked to a Trainee profile.');
+        }
+
+        $month = (int) $request->get('month');
+        $year  = (int) $request->get('year');
+
+        if (!$month || !$year) {
+            return redirect()->back()->with('error', 'Please select a month and year before submitting.');
+        }
+
+        // Create or update monthly submission record
+        MonthlySubmission::updateOrCreate(
+            [
+                'trainee_id' => $trainee->id,
+                'month' => $month,
+                'year' => $year,
+            ],
+            [
+                'is_read' => false, // Mark as unread for HR notification
+            ]
+        );
+
         return redirect()
             ->route('trainee.monthly.index', [
-                'month' => $request->get('month'),
-                'year'  => $request->get('year'),
+                'month' => $month,
+                'year'  => $year,
             ])
             ->with('success', 'Monthly attendance report has been sent to HR for processing.');
     }

@@ -1,5 +1,7 @@
 @extends('layouts.trainee')
 
+@section('header_title', 'My Profile')
+
 @section('content')
 <div class="space-y-8" data-aos="fade-up">
     

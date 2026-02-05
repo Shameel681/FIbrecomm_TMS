@@ -126,8 +126,8 @@
         <aside class="w-64 bg-brand-navy text-white flex flex-col fixed h-full z-50 shadow-2xl">
             <div class="p-8 border-b border-white/5">
                 <div class="flex flex-col">
-                    <span class="text-brand-red font-black text-xl tracking-tighter uppercase">HR Control</span>
-                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Management System</span>
+                    <span class="text-brand-red font-black text-xl tracking-tighter uppercase">HR Portal</span>
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Trainee Management System</span>
                 </div>
             </div>
 
@@ -167,7 +167,7 @@
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
                     <button type="submit" class="group relative w-full bg-brand-red text-white py-4 rounded-sm font-black text-[10px] uppercase tracking-[0.2em] overflow-hidden shadow-lg">
-                        <span class="relative z-10 transition-colors duration-300 group-hover:text-brand-navy">Secure Logout</span>
+                        <span class="relative z-10 transition-colors duration-300 group-hover:text-brand-navy">LOG OUT</span>
                         <div class="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
                     </button>
                 </form>
@@ -184,7 +184,7 @@
                     <div class="h-8 w-[1px] bg-gray-200"></div>
                     <div>
                         <h1 class="text-xl font-black text-brand-navy tracking-tighter uppercase">
-                            HR <span class="text-brand-red">Console</span>
+                            HR <span class="text-brand-red">Portal</span>
                         </h1>
                         <p class="text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em]">Fibrecomm Network (M) Sdn Bhd</p>
                     </div>

@@ -5,6 +5,46 @@
 @section('hr_content')
 <div class="space-y-8" data-aos="fade-up" data-aos-duration="800">
 
+    {{-- Notification Alert for New Submissions --}}
+    @if($unreadSubmissions->count() > 0)
+        <div class="bg-amber-50 border-l-4 border-amber-500 p-6 rounded-lg shadow-sm relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-bl-full"></div>
+            <div class="relative z-10 flex items-start justify-between gap-4">
+                    <div class="flex items-start gap-3">
+                        <div class="shrink-0">
+                        <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-black text-amber-900 uppercase tracking-wider mb-2">
+                            New Monthly Attendance Submissions
+                        </h3>
+                        <p class="text-xs text-amber-700 font-semibold mb-3">
+                            {{ $unreadSubmissions->count() }} {{ $unreadSubmissions->count() === 1 ? 'trainee has' : 'trainees have' }} submitted their monthly attendance report.
+                        </p>
+                        <div class="space-y-2">
+                            @foreach($unreadSubmissions->take(5) as $submission)
+                                <div class="flex items-center gap-2 text-xs text-amber-800">
+                                    <span class="w-2 h-2 bg-amber-500 rounded-full"></span>
+                                    <span class="font-bold">{{ $submission->trainee->name ?? 'Unknown Trainee' }}</span>
+                                    <span class="text-amber-600">—</span>
+                                    <span class="font-semibold">{{ \Carbon\Carbon::create($submission->year, $submission->month, 1)->format('F Y') }}</span>
+                                    <span class="text-amber-500 text-[10px]">({{ $submission->created_at->diffForHumans() }})</span>
+                                </div>
+                            @endforeach
+                            @if($unreadSubmissions->count() > 5)
+                                <p class="text-[10px] text-amber-600 font-bold italic">
+                                    +{{ $unreadSubmissions->count() - 5 }} more submission(s)
+                                </p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     {{-- Header / Step 1: Select Period --}}
     <div class="bg-white p-8 border border-gray-200 rounded-2xl shadow-sm relative overflow-hidden">
         <div class="absolute top-0 right-0 w-32 h-32 bg-brand-navy/5 rounded-bl-full"></div>
@@ -71,11 +111,21 @@
                             <tr class="hover:bg-brand-red/[0.02] transition-colors {{ $selectedTraineeId == $trainee->id ? 'bg-brand-red/[0.04]' : '' }}">
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
-                                        <div class="h-8 w-8 bg-brand-navy text-white flex items-center justify-center font-black rounded-md text-xs">
-                                            {{ strtoupper(substr($trainee->name, 0, 1)) }}
+                                        <div class="relative">
+                                            <div class="h-8 w-8 bg-brand-navy text-white flex items-center justify-center font-black rounded-md text-xs">
+                                                {{ strtoupper(substr($trainee->name, 0, 1)) }}
+                                            </div>
+                                            @if(isset($trainee->submission_is_unread) && $trainee->submission_is_unread)
+                                                <span class="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 rounded-full border-2 border-white"></span>
+                                            @endif
                                         </div>
                                         <div>
-                                            <p class="font-black text-brand-navy uppercase text-[11px]">{{ $trainee->name }}</p>
+                                            <div class="flex items-center gap-2">
+                                                <p class="font-black text-brand-navy uppercase text-[11px]">{{ $trainee->name }}</p>
+                                                @if(isset($trainee->has_submitted) && $trainee->has_submitted)
+                                                    <span class="px-1.5 py-0.5 bg-green-100 text-green-700 text-[8px] font-black uppercase rounded">Submitted</span>
+                                                @endif
+                                            </div>
                                             <p class="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
                                                 Approved: {{ $trainee->monthly_approved_count }} days
                                             </p>
