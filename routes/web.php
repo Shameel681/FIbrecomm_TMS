@@ -124,6 +124,7 @@ Route::middleware(['auth', 'role:hr', 'no.cache'])->prefix('hr')->name('hr.')->g
     // Trainee Monthly Attendance Overview for HR
     Route::get('/submissions/trainee-monthly', [TraineeMonthlyController::class, 'index'])->name('submissions.traineeMonthly');
     Route::get('/submissions/trainee-monthly/export/{trainee}', [TraineeMonthlyController::class, 'exportPdf'])->name('submissions.traineeMonthly.export');
+    Route::put('/submissions/trainee-monthly/set-global-rate', [TraineeMonthlyController::class, 'setGlobalRate'])->name('submissions.traineeMonthly.setGlobalRate');
 
     // Settings: Allowance rate
     Route::get('/settings/allowance', [SettingController::class, 'editAllowance'])->name('settings.allowance.edit');

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Trainee;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\MonthlySubmission;
+use App\Models\SystemSetting;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,8 +38,8 @@ class MonthlyAttendanceController extends Controller
 
         $approvedCount = $records->where('status', 'approved')->count();
 
-        // Use trainee-specific daily_rate column; default to 30 if empty
-        $allowanceRate = (float) ($trainee->daily_rate ?: 30);
+        // Use global system setting for default rate
+        $allowanceRate = (float) SystemSetting::get('allowance_rate_per_day', 30);
 
         // Build calendar-style grouping by date
         $calendarByDate = $records->groupBy(function ($record) {
@@ -125,8 +126,8 @@ class MonthlyAttendanceController extends Controller
 
         $selectedDate = Carbon::create($year, $month, 1);
 
-        // Use trainee-specific daily_rate column; default to 30 if empty
-        $allowanceRate = (float) ($trainee->daily_rate ?: 30);
+        // Use global system setting for default rate
+        $allowanceRate = (float) SystemSetting::get('allowance_rate_per_day', 30);
 
         $pdf = Pdf::loadView('hr.submissions.trainee_monthly_pdf', [
             'trainee'       => $trainee,

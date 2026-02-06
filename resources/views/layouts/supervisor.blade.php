@@ -127,7 +127,7 @@
 
         <div class="flex-grow ml-64 flex flex-col">
             {{-- Header (Now with Logo and Red Portal text) --}}
-            <header class="flex items-center justify-between px-10 py-6 bg-white border-b border-gray-100 sticky top-0 z-40">
+            <header class="flex items-center justify-between px-10 py-6 bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm">
                 <div class="flex items-center gap-6">
                     <a href="{{ route('supervisor.dashboard') }}" class="logo-container h-12 w-auto shrink-0 flex items-center justify-center">
                         <img src="{{ asset('images/logo1.png') }}" alt="Fibrecomm Logo" class="h-full w-auto object-contain">
@@ -152,7 +152,7 @@
                 </div>
             </header>
 
-            <nav class="bg-brand-navy text-white sticky top-18 z-40 shadow-xl">
+            <nav class="bg-brand-navy text-white sticky top-[88px] z-30 shadow-xl">
                 <div class="flex items-center px-10">
                     <div class="nav-link relative py-5 px-6 bg-white/5 border-r border-white/5 uppercase text-[11px] tracking-[0.2em] font-black">
                         <span class="text-brand-red">Section:</span> @yield('header_title', 'Performance Overview')

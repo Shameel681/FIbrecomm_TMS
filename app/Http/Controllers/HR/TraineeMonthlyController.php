@@ -5,6 +5,7 @@ namespace App\Http\Controllers\HR;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\MonthlySubmission;
+use App\Models\SystemSetting;
 use App\Models\Trainee;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -93,6 +94,9 @@ class TraineeMonthlyController extends Controller
             }
         }
 
+        // Get global default rate
+        $globalDefaultRate = (float) SystemSetting::get('allowance_rate_per_day', 30);
+
         return view('hr.submissions.traineemonthly', [
             'periodChosen'      => $periodChosen,
             'trainees'          => $trainees,
@@ -104,6 +108,7 @@ class TraineeMonthlyController extends Controller
             'selectedDate'      => $selectedDate,
             'selectedTraineeId' => $selectedTraineeId,
             'unreadSubmissions' => $unreadSubmissions,
+            'globalDefaultRate' => $globalDefaultRate,
         ]);
     }
 
@@ -129,8 +134,8 @@ class TraineeMonthlyController extends Controller
 
         $selectedDate = Carbon::create($year, $month, 1);
 
-        // Use trainee-specific daily_rate column; default to 30 if empty
-        $allowanceRate = (float) ($trainee->daily_rate ?: 30);
+        // Use global system setting for default rate
+        $allowanceRate = (float) SystemSetting::get('allowance_rate_per_day', 30);
 
         $pdf = Pdf::loadView('hr.submissions.trainee_monthly_pdf', [
             'trainee'       => $trainee,
@@ -142,6 +147,30 @@ class TraineeMonthlyController extends Controller
         $fileName = 'Trainee_Attendance_'.$trainee->name.'_'.$selectedDate->format('M_Y').'.pdf';
 
         return $pdf->download($fileName);
+    }
+
+    /**
+     * Update global allowance rate for all trainees.
+     */
+    public function setGlobalRate(Request $request)
+    {
+        $validated = $request->validate([
+            'rate' => ['required', 'numeric', 'min:0', 'max:9999.99'],
+        ]);
+
+        SystemSetting::set('allowance_rate_per_day', $validated['rate']);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Global allowance rate updated successfully.',
+                'rate' => number_format($validated['rate'], 2),
+            ]);
+        }
+
+        return redirect()
+            ->route('hr.submissions.traineeMonthly')
+            ->with('success', 'Global allowance rate updated successfully.');
     }
 }
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Attendance;
+use App\Models\SystemSetting;
 use App\Models\Trainee;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -206,8 +207,8 @@ class AttendanceController extends Controller
 
         $selectedDate = Carbon::create($year, $month, 1);
 
-        // Use trainee-specific daily_rate column; default to 30 if empty
-        $allowanceRate = (float) ($trainee->daily_rate ?: 30);
+        // Use global system setting for default rate
+        $allowanceRate = (float) SystemSetting::get('allowance_rate_per_day', 30);
 
         $pdf = Pdf::loadView('hr.submissions.trainee_monthly_pdf', [
             'trainee'       => $trainee,
