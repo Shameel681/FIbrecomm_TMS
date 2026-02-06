@@ -5,6 +5,21 @@
 @section('supervisor_content')
 <div class="p-2">
 
+    {{-- Success/Error Messages --}}
+    @if(session('success'))
+        <div class="mb-6 bg-green-50 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-sm flex justify-between items-center" data-aos="fade-down">
+            <p class="text-[10px] font-black uppercase tracking-widest">{{ session('success') }}</p>
+            <button onclick="this.parentElement.remove()" class="text-green-700 font-bold text-lg leading-none">&times;</button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="mb-6 bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-sm flex justify-between items-center" data-aos="fade-down">
+            <p class="text-[10px] font-black uppercase tracking-widest">{{ session('error') }}</p>
+            <button onclick="this.parentElement.remove()" class="text-red-700 font-bold text-lg leading-none">&times;</button>
+        </div>
+    @endif
+
     {{-- Section Header --}}
     <div class="mb-10" data-aos="fade-right">
         <h2 class="text-4xl font-black text-brand-navy uppercase tracking-tight">Attendance Approvals</h2>
@@ -49,16 +64,14 @@
                                     </button>
                                 </form>
 
-                                {{-- Reject --}}
-                                <form action="{{ route('supervisor.attendance.reject', $attendance->id) }}" method="POST">
-                                    @csrf
-                                    <button
-                                        type="submit"
-                                        class="border-2 border-red-500 text-red-500 px-5 py-2 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-red-500 hover:text-white transition shadow"
-                                    >
-                                        Reject
-                                    </button>
-                                </form>
+                                {{-- Reject Button (opens modal) --}}
+                                <button
+                                    type="button"
+                                    onclick="openRejectModal({{ $attendance->id }})"
+                                    class="border-2 border-red-500 text-red-500 px-5 py-2 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-red-500 hover:text-white transition shadow"
+                                >
+                                    Reject
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -78,7 +91,7 @@
     {{-- Trainee Attendance Calendar --}}
     @if($assignedTrainees->count() > 0)
         <div class="mt-16 mb-8" data-aos="fade-right">
-            <h2 class="text-3xl font-black text-brand-navy uppercase tracking-tight">Trainee Attendance Overview</h2>
+            <h2 class="text-3xl font-black text-brand-navy uppercase tracking-tight">Assigned Trainee Attendance Overview</h2>
             <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-[0.25em] mt-1">
                 Attendance history for your assigned trainees.
             </p>
@@ -283,10 +296,110 @@
     @endif
 
 </div>
+
+{{-- Reject Modal --}}
+<div id="rejectModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50" style="display: none;">
+    <div class="bg-white rounded-2xl shadow-xl max-w-md w-full mx-4" data-aos="zoom-in">
+        <div class="p-6 border-b border-gray-200">
+            <h3 class="text-xl font-black text-brand-navy uppercase tracking-tighter">Reject Attendance</h3>
+            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1">
+                Please provide a reason for rejection
+            </p>
+        </div>
+        
+        <form id="rejectForm" method="POST" class="p-6 space-y-4">
+            @csrf
+            <div>
+                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
+                    Rejection Remarks <span class="text-red-500">*</span>
+                </label>
+                <textarea
+                    name="remarks"
+                    id="rejectRemarks"
+                    rows="4"
+                    required
+                    minlength="5"
+                    maxlength="500"
+                    placeholder="Enter the reason for rejecting this attendance request..."
+                    class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none font-semibold text-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all resize-none"
+                ></textarea>
+                <p class="text-[9px] text-gray-400 mt-1">
+                    Minimum 5 characters required. Maximum 500 characters.
+                </p>
+                @error('remarks')
+                    <p class="text-red-500 text-[9px] font-black uppercase mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+            
+            <div class="flex justify-end gap-3 pt-4 border-t border-gray-200">
+                <button
+                    type="button"
+                    onclick="closeRejectModal()"
+                    class="px-5 py-2 border-2 border-gray-300 text-gray-700 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-gray-100 transition"
+                >
+                    Cancel
+                </button>
+                <button
+                    type="submit"
+                    class="px-5 py-2 bg-red-500 text-white rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-red-600 transition shadow"
+                >
+                    Confirm Rejection
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
 <script>
+function openRejectModal(attendanceId) {
+    const modal = document.getElementById('rejectModal');
+    const form = document.getElementById('rejectForm');
+    const remarks = document.getElementById('rejectRemarks');
+    
+    // Set the form action
+    form.action = `/supervisor/attendance/reject/${attendanceId}`;
+    
+    // Clear previous remarks
+    remarks.value = '';
+    
+    // Show modal
+    modal.style.display = 'flex';
+    modal.classList.remove('hidden');
+    
+    // Focus on textarea
+    setTimeout(() => remarks.focus(), 100);
+}
+
+function closeRejectModal() {
+    const modal = document.getElementById('rejectModal');
+    const form = document.getElementById('rejectForm');
+    const remarks = document.getElementById('rejectRemarks');
+    
+    // Hide modal
+    modal.style.display = 'none';
+    modal.classList.add('hidden');
+    
+    // Clear form
+    remarks.value = '';
+    form.action = '';
+}
+
+// Close modal when clicking outside
+document.getElementById('rejectModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeRejectModal();
+    }
+});
+
+// Close modal on Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeRejectModal();
+    }
+});
+
 // FIXED & UPDATED — 100% WORKING MONTH SELECTOR
 document.addEventListener('DOMContentLoaded', function () {
 

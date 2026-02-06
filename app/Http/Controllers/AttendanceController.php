@@ -42,7 +42,17 @@ class AttendanceController extends Controller
                              ->orderBy('date', 'desc')
                              ->paginate(10);
 
-        return view('trainee.attendance.index', compact('todayRecord', 'history', 'month', 'year'));
+        // Fetch rejected attendances with remarks (for inbox)
+        $rejectedAttendances = Attendance::where('trainee_id', $trainee->id)
+                                        ->where('status', 'rejected')
+                                        ->whereNotNull('remarks')
+                                        ->with('approver')
+                                        ->orderBy('date', 'desc')
+                                        ->orderBy('updated_at', 'desc')
+                                        ->limit(10)
+                                        ->get();
+
+        return view('trainee.attendance.index', compact('todayRecord', 'history', 'month', 'year', 'rejectedAttendances'));
     }
 
     /**
@@ -68,12 +78,18 @@ class AttendanceController extends Controller
             return back()->with('error', 'You have already clocked in for today.');
         }
 
+        // VALIDATION 3: Require trainee remarks
+        $validated = $request->validate([
+            'trainee_remark' => ['required', 'string', 'min:5', 'max:500'],
+        ]);
+
         // EXECUTION: Create the record
         Attendance::create([
             'trainee_id' => $trainee->id,
             'date' => $today,
             'clock_in' => now()->toTimeString(),
             'status' => 'pending', // Waiting for supervisor
+            'trainee_remark' => $validated['trainee_remark'],
         ]);
 
         return back()->with('success', 'Clock-in successful! Awaiting supervisor approval.');
@@ -146,10 +162,15 @@ class AttendanceController extends Controller
              return back()->with('error', 'Unauthorized action.');
         }
 
+        // Validate that remarks are required
+        $validated = $request->validate([
+            'remarks' => ['required', 'string', 'min:5', 'max:500'],
+        ]);
+
         $attendance->update([
             'status' => 'rejected',
             'approved_by' => Auth::id(),
-            'remarks' => $request->remarks // Optional rejection reason
+            'remarks' => $validated['remarks']
         ]);
 
         return back()->with('success', 'Attendance rejected.');

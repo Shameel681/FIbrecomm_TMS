@@ -15,7 +15,8 @@ class Attendance extends Model
         'clock_in',
         'status',
         'approved_by',
-        'remarks'
+        'remarks',
+        'trainee_remark'
     ];
 
     public function trainee()

@@ -91,7 +91,7 @@
                         {{-- Place for supervisor initials / signature --}}
                     </td>
                     <td>
-                        {{ $record->remarks ?? '_________________________________________' }}
+                        {{ $record->trainee_remark ?? '_________________________________________' }}
                     </td>
                 </tr>
             @endforeach
