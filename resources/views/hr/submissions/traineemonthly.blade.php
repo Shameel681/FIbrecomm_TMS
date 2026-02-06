@@ -102,7 +102,7 @@
                     <h3 class="text-[11px] font-black text-brand-navy uppercase tracking-[0.2em]">Step 2 &mdash; Select Active Trainee</h3>
                     <p class="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Only active trainee accounts are listed</p>
                 </div>
-                <span class="text-[9px] font-black text-gray-400 uppercase tracking-widest">{{ $trainees->count() }} active</span>
+                <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">{{ $trainees->count() }} active</p>
             </div>
             <div class="max-h-[520px] overflow-y-auto">
                 <table class="w-full text-left text-xs">

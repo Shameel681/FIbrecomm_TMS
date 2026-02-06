@@ -109,10 +109,17 @@
         </tbody>
     </table>
 
+    @php
+        $workingDays = $records->where('status','approved')->count();
+        $rate = isset($allowanceRate) ? (float) $allowanceRate : 30;
+        $totalAllowance = $workingDays * $rate;
+    @endphp
     <table style="margin-top: 8px;">
         <tr>
             <td class="small-text">
-                No. of working days: <strong>{{ $records->where('status','approved')->count() }}</strong>
+                No. of working days: <strong>{{ $workingDays }}</strong><br>
+                Allowance rate per day: <strong>RM {{ number_format($rate, 2) }}</strong><br>
+                Total allowance for month: <strong>RM {{ number_format($totalAllowance, 2) }}</strong>
             </td>
             <td class="small-text right">
                 Verified by HR: ______________________

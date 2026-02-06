@@ -62,6 +62,25 @@
                         Export PDF Summary
                     </a>
                 </div>
+
+                {{-- Total Allowance Calculation --}}
+                <div class="pt-4 border-t border-gray-200 bg-gray-50 -mx-6 -mb-6 px-6 py-4 rounded-b-2xl">
+                    <p class="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-3">Monthly Allowance Calculation</p>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600 font-semibold">Working Days (Approved):</span>
+                            <span class="text-brand-navy font-black">{{ $approvedCount }} days</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600 font-semibold">Rate Per Day:</span>
+                            <span class="text-brand-navy font-black">RM {{ number_format($allowanceRate, 2) }}</span>
+                        </div>
+                        <div class="pt-2 border-t border-gray-300 flex justify-between items-center">
+                            <span class="text-gray-700 font-black uppercase tracking-wider">Total Allowance:</span>
+                            <span class="text-2xl font-black text-brand-red">RM {{ number_format($approvedCount * $allowanceRate, 2) }}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 

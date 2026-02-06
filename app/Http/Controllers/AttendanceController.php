@@ -185,10 +185,14 @@ class AttendanceController extends Controller
 
         $selectedDate = Carbon::create($year, $month, 1);
 
+        // Use trainee-specific daily_rate column; default to 30 if empty
+        $allowanceRate = (float) ($trainee->daily_rate ?: 30);
+
         $pdf = Pdf::loadView('hr.submissions.trainee_monthly_pdf', [
-            'trainee'      => $trainee,
-            'records'      => $records,
-            'selectedDate' => $selectedDate,
+            'trainee'       => $trainee,
+            'records'       => $records,
+            'selectedDate'  => $selectedDate,
+            'allowanceRate' => $allowanceRate,
         ])->setPaper('a4', 'portrait');
 
         $fileName = 'Trainee_Attendance_'.$trainee->name.'_'.$selectedDate->format('M_Y').'.pdf';

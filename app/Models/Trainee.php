@@ -15,8 +15,11 @@ class Trainee extends Model
         'name', // Keep this if you actually store name in the trainees table
         'email', 
         'start_date', 
-        'end_date', 
-        'status'
+        'end_date',
+        'status',
+        'bank_name',
+        'account_number',
+        'daily_rate'
     ];
 
     public function user(): BelongsTo

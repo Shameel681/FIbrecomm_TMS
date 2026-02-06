@@ -37,6 +37,9 @@ class MonthlyAttendanceController extends Controller
 
         $approvedCount = $records->where('status', 'approved')->count();
 
+        // Use trainee-specific daily_rate column; default to 30 if empty
+        $allowanceRate = (float) ($trainee->daily_rate ?: 30);
+
         // Build calendar-style grouping by date
         $calendarByDate = $records->groupBy(function ($record) {
             return Carbon::parse($record->date)->toDateString();
@@ -50,6 +53,7 @@ class MonthlyAttendanceController extends Controller
             'year'          => $year,
             'targetDate'    => Carbon::create($year, $month, 1),
             'calendarByDate'=> $calendarByDate,
+            'allowanceRate' => $allowanceRate,
         ]);
     }
 
@@ -121,10 +125,14 @@ class MonthlyAttendanceController extends Controller
 
         $selectedDate = Carbon::create($year, $month, 1);
 
+        // Use trainee-specific daily_rate column; default to 30 if empty
+        $allowanceRate = (float) ($trainee->daily_rate ?: 30);
+
         $pdf = Pdf::loadView('hr.submissions.trainee_monthly_pdf', [
-            'trainee'      => $trainee,
-            'records'      => $records,
-            'selectedDate' => $selectedDate,
+            'trainee'       => $trainee,
+            'records'       => $records,
+            'selectedDate'  => $selectedDate,
+            'allowanceRate' => $allowanceRate,
         ])->setPaper('a4', 'portrait');
 
         $fileName = 'My_Attendance_'.$selectedDate->format('M_Y').'.pdf';

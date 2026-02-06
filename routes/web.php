@@ -11,6 +11,7 @@ use App\Http\Controllers\Supervisor\SupervisorDashboardController;
 use App\Http\Controllers\Supervisor\SupervisorProfileController;
 use App\Http\Controllers\HR\HRDashboardController;
 use App\Http\Controllers\HR\TraineeMonthlyController;
+use App\Http\Controllers\HR\SettingController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminSvController;
 use App\Http\Controllers\Admin\AdminTraineeController;
@@ -123,6 +124,10 @@ Route::middleware(['auth', 'role:hr', 'no.cache'])->prefix('hr')->name('hr.')->g
     // Trainee Monthly Attendance Overview for HR
     Route::get('/submissions/trainee-monthly', [TraineeMonthlyController::class, 'index'])->name('submissions.traineeMonthly');
     Route::get('/submissions/trainee-monthly/export/{trainee}', [TraineeMonthlyController::class, 'exportPdf'])->name('submissions.traineeMonthly.export');
+
+    // Settings: Allowance rate
+    Route::get('/settings/allowance', [SettingController::class, 'editAllowance'])->name('settings.allowance.edit');
+    Route::put('/settings/allowance', [SettingController::class, 'updateAllowance'])->name('settings.allowance.update');
 });
 
 /*
@@ -135,6 +140,8 @@ Route::middleware(['auth', 'role:trainee', 'no.cache'])->prefix('trainee')->name
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::put('/profile/personal-info', [ProfileController::class, 'updatePersonalInfo'])->name('profile.personalInfo');
 
     Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
     Route::post('/attendance/clock-in', [AttendanceController::class, 'clockIn'])->name('attendance.clockIn');
