@@ -115,7 +115,10 @@ Route::middleware(['auth', 'role:hr', 'no.cache'])->prefix('hr')->name('hr.')->g
 
     // Trainee Management
     Route::get('/trainees', [HRDashboardController::class, 'manageTrainees'])->name('trainees');
+    Route::get('/trainees/inactive', [HRDashboardController::class, 'inactiveTrainees'])->name('trainees.inactive');
     Route::post('/trainees/store-account', [HRDashboardController::class, 'storeAccount'])->name('trainees.store_account');
+    Route::post('/trainees/{id}/toggle-status', [HRDashboardController::class, 'toggleAccountStatus'])->name('trainees.toggle_status');
+    Route::post('/trainees/{id}/archive', [HRDashboardController::class, 'archiveTrainee'])->name('trainees.archive');
 
     // STEP 2: Supervisor Assignment Logic
     Route::get('/assign-supervisor', [HRDashboardController::class, 'showAssignPage'])->name('attendance.assign');

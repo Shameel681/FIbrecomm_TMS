@@ -147,20 +147,68 @@ class HRDashboardController extends Controller
     public function manageTrainees()
     {
         $now = now();
+        $today = $now->toDateString();
         $totalRegistered = Trainee::count();
-        
-        // Count active based on status and dates
-        $activeCount = Trainee::where('status', 'active')
-            ->whereDate('start_date', '<=', $now)
-            ->whereDate('end_date', '>=', $now)
-            ->count();
 
-        $trainees = Trainee::orderBy('start_date', 'desc')->get();
+        // Auto-mark trainees whose internship has ended as completed + deactivate their accounts (one-time)
+        $recentlyEnded = Trainee::with('user')
+            ->whereDate('end_date', '<', $today)
+            ->where(function ($q) {
+                $q->whereNull('status')
+                  ->orWhere('status', 'active');
+            })
+            ->whereHas('user', function ($q) {
+                $q->where('is_active', true);
+            })
+            ->get();
+
+        foreach ($recentlyEnded as $trainee) {
+            if ($trainee->user) {
+                $trainee->user->update(['is_active' => false]);
+            }
+            $trainee->update([
+                'status' => 'completed',
+                'deactivated_at' => $today,
+            ]);
+        }
+        // Build collections for Active vs Inactive/Deactivated containers
+        $threeDaysAgo = now()->subDays(3)->toDateString();
+
+        // Archived / Inactive list: deactivated accounts for 3+ days OR explicitly archived
+        $archivedTrainees = Trainee::with('user')
+            ->whereHas('user', function ($q) {
+                $q->where('is_active', false);
+            })
+            ->whereDate('deactivated_at', '<=', $threeDaysAgo)
+            ->orderBy('start_date', 'desc')
+            ->get();
+
+        $archivedIds = $archivedTrainees->pluck('id');
+
+        // Active list: everyone else (including newly deactivated within last 3 days)
+        $activeTrainees = Trainee::with('user')
+            ->whereNotIn('id', $archivedIds)
+            ->orderBy('start_date', 'desc')
+            ->get();
+
+        // Recalculate active count based on updated statuses and dates
+        $activeCount = Trainee::where('status', 'active')
+            ->whereDate('start_date', '<=', $today)
+            ->whereDate('end_date', '>=', $today)
+            ->count();
         
         // Approved applicants who need accounts created
         $onboardingQueue = TraineeForm::where('status', 'approved')->latest()->get();
 
-        return view('hr.trainees', compact('activeCount', 'totalRegistered', 'trainees', 'onboardingQueue'));
+        // Pass list of newly ended internships to notify HR in the UI
+        return view('hr.trainees', compact(
+            'activeCount',
+            'totalRegistered',
+            'onboardingQueue',
+            'recentlyEnded',
+            'activeTrainees',
+            'archivedTrainees'
+        ));
     }
 
     /**
@@ -189,7 +237,8 @@ class HRDashboardController extends Controller
             [
                 'name' => $request->name,
                 'password' => Hash::make($tempPassword),
-                'role' => 'trainee'
+                'role' => 'trainee',
+                'is_active' => true,
             ]
         );
 
@@ -220,8 +269,13 @@ class HRDashboardController extends Controller
 
 public function showAssignPage()
 {
-    // Fetch all trainees with their current supervisor
-    $trainees = Trainee::with('supervisor')->get();
+    // Fetch only ACTIVE trainees (linked to an active user account) with their current supervisor
+    $trainees = Trainee::with(['supervisor', 'user'])
+        ->whereHas('user', function ($query) {
+            $query->where('is_active', true);
+        })
+        ->orderBy('start_date', 'desc')
+        ->get();
 
     // All supervisor user accounts
     $supervisors = User::where('role', 'supervisor')->get();
@@ -240,8 +294,13 @@ public function assignSupervisor(Request $request, $id)
         'supervisor_id' => ['required', 'exists:users,id'],
     ]);
 
-    $trainee = Trainee::findOrFail($id);
+    $trainee = Trainee::with('user')->findOrFail($id);
     $supervisor = User::where('role', 'supervisor')->findOrFail($request->supervisor_id);
+
+    // Prevent assigning supervisor to a deactivated trainee account
+    if (!$trainee->user || !$trainee->user->is_active || $trainee->status === 'inactive') {
+        return back()->with('error', 'Cannot assign a supervisor to a deactivated trainee account.');
+    }
 
     // Enforce: one trainee per supervisor.
     $alreadyHasTrainee = Trainee::where('supervisor_id', $supervisor->id)
@@ -263,4 +322,73 @@ public function assignSupervisor(Request $request, $id)
 
     return back()->with('success', 'Supervisor assigned and notifications sent successfully!');
 }
+
+/**
+ * Update trainee account activation status
+ */
+public function toggleAccountStatus(Request $request, $id)
+{
+    $request->validate([
+        'status' => 'required|boolean',
+    ]);
+
+    try {
+        $trainee = Trainee::with('user')->findOrFail($id);
+        
+        if (!$trainee->user) {
+            return back()->with('error', 'User account not found for this trainee.');
+        }
+
+        $user = $trainee->user;
+        $newStatus = (bool) $request->status;
+        
+        $user->update(['is_active' => $newStatus]);
+        
+        // Optionally update trainee status as well
+        if (!$newStatus) {
+            $trainee->update([
+                'status' => 'inactive',
+                'deactivated_at' => now()->toDateString(),
+            ]);
+        } else {
+            // Only set to active if dates are valid
+            $now = now();
+            if ($now->between($trainee->start_date, $trainee->end_date)) {
+                $trainee->update([
+                    'status' => 'active',
+                    'deactivated_at' => null,
+                ]);
+            }
+        }
+
+        $message = $newStatus 
+            ? 'Trainee account activated successfully.' 
+            : 'Trainee account deactivated successfully. Access has been restricted.';
+
+        return back()->with('success', $message);
+    } catch (\Exception $e) {
+        \Log::error('Account Status Update Error: ' . $e->getMessage());
+        return back()->with('error', 'Failed to update account status. Please try again.');
+    }
+}
+
+    /**
+     * Manually move a deactivated trainee into the archived list immediately (via eye button).
+     */
+    public function archiveTrainee($id)
+    {
+        $trainee = Trainee::with('user')->findOrFail($id);
+
+        if (!$trainee->user || $trainee->user->is_active) {
+            return back()->with('error', 'Only deactivated trainee accounts can be moved to the inactive/deactivated list.');
+        }
+
+        // Force deactivated_at to at least 3 days ago so it appears in archived container immediately
+        $threeDaysAgo = now()->subDays(3)->toDateString();
+        $trainee->update([
+            'deactivated_at' => $threeDaysAgo,
+        ]);
+
+        return back()->with('success', 'Trainee has been moved to the Inactive/Deactivated list.');
+    }
 }

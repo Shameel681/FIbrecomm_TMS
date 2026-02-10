@@ -28,6 +28,7 @@ class TraineeMonthlyController extends Controller
         $periodChosen = $month && $year;
 
         $trainees = collect();
+        $inactiveTrainees = collect();
         $selectedTrainee = null;
         $traineeRecords  = collect();
         $calendarByDate  = collect();
@@ -43,7 +44,7 @@ class TraineeMonthlyController extends Controller
             $month = (int) $month;
             $year  = (int) $year;
 
-            // Step 2: active trainees only
+            // Step 2: active trainees only (main list)
             $trainees = Trainee::where('status', 'active')
                 ->with('supervisor')
                 ->orderBy('name')
@@ -68,10 +69,34 @@ class TraineeMonthlyController extends Controller
                     return $trainee;
                 });
 
-            // Step 3: selected trainee + calendar data
+            // Step 2b: inactive/deactivated trainees for reference list
+            $inactiveTrainees = Trainee::with(['supervisor', 'user'])
+                ->whereHas('user', function ($q) {
+                    $q->where('is_active', false);
+                })
+                ->orderBy('name')
+                ->get()
+                ->map(function ($trainee) use ($month, $year) {
+                    $records = Attendance::where('trainee_id', $trainee->id)
+                        ->whereYear('date', $year)
+                        ->whereMonth('date', $month)
+                        ->get();
+
+                    $trainee->monthly_records_count = $records->count();
+                    $trainee->monthly_approved_count = $records->where('status', 'approved')->count();
+
+                    $submission = MonthlySubmission::where('trainee_id', $trainee->id)
+                        ->where('month', $month)
+                        ->where('year', $year)
+                        ->first();
+                    $trainee->has_submitted = $submission !== null;
+
+                    return $trainee;
+                });
+
+            // Step 3: selected trainee (active or inactive) + calendar data
             if ($selectedTraineeId) {
-                $selectedTrainee = Trainee::where('status', 'active')
-                    ->with('supervisor')
+                $selectedTrainee = Trainee::with(['supervisor', 'user'])
                     ->find($selectedTraineeId);
 
                 if ($selectedTrainee) {
@@ -100,6 +125,7 @@ class TraineeMonthlyController extends Controller
         return view('hr.submissions.traineemonthly', [
             'periodChosen'      => $periodChosen,
             'trainees'          => $trainees,
+            'inactiveTrainees'  => $inactiveTrainees,
             'selectedTrainee'   => $selectedTrainee,
             'traineeRecords'    => $traineeRecords,
             'calendarByDate'    => $calendarByDate,

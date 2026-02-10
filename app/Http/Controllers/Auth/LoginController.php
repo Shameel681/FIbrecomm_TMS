@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class LoginController extends Controller
 {
@@ -26,7 +27,38 @@ class LoginController extends Controller
             // 3. Get the authenticated user
             $user = Auth::user();
 
-            // 4. Redirect based on role
+            // 3a. If trainee internship has ended, auto-deactivate and block login with clear message
+            if ($user->role === 'trainee' && $user->trainee) {
+                $trainee = $user->trainee;
+                if ($trainee->end_date && Carbon::now()->greaterThan(Carbon::parse($trainee->end_date)->endOfDay())) {
+                    // Auto mark as completed & deactivate account
+                    $user->is_active = false;
+                    $user->save();
+                    $trainee->status = 'completed';
+                    $trainee->save();
+
+                    Auth::logout();
+                    $request->session()->invalidate();
+                    $request->session()->regenerateToken();
+
+                    return back()->withErrors([
+                        'email' => 'Your internship duration has ended and your trainee account has been deactivated. Please contact HR if you need further assistance.',
+                    ])->onlyInput('email');
+                }
+            }
+
+            // 4. Check if account is active
+            if (!$user->is_active) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                
+                return back()->withErrors([
+                    'email' => 'Your account has been deactivated. Please contact HR for assistance.',
+                ])->onlyInput('email');
+            }
+
+            // 5. Redirect based on role
             switch ($user->role) {
                 case 'admin':
                     return redirect()->intended('/admin/users');

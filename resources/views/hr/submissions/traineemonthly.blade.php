@@ -312,6 +312,83 @@
             @endif
         </div>
     </div>
+
+    {{-- Full-width: Inactive / Deactivated Trainees for this period (after all content) --}}
+    <div class="mt-8 bg-gray-50 rounded-2xl border border-gray-200 shadow-inner overflow-hidden">
+        <div class="px-6 py-4 bg-gray-100 border-b border-gray-200 flex justify-between items-center">
+            <div>
+                <h3 class="text-[11px] font-black text-brand-navy uppercase tracking-[0.2em]">Inactive / Deactivated Trainee Accounts</h3>
+                <p class="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
+                    Deactivated accounts with attendance records for the selected period (viewable history)
+                </p>
+            </div>
+            <span class="px-3 py-1 bg-gray-800 text-white rounded-full text-[9px] font-black uppercase tracking-widest">
+                {{ isset($inactiveTrainees) ? $inactiveTrainees->count() : 0 }} Inactive
+            </span>
+        </div>
+
+        <div class="max-h-[360px] overflow-y-auto">
+            <table class="w-full text-left text-xs">
+                <tbody class="divide-y divide-gray-100">
+                    @forelse($inactiveTrainees as $trainee)
+                        <tr class="hover:bg-gray-100 transition-colors">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="h-8 w-8 bg-gray-400 text-white flex items-center justify-center font-black rounded-lg text-[10px] shadow-sm">
+                                        {{ strtoupper(substr($trainee->name, 0, 1)) }}
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <p class="font-black text-brand-navy uppercase text-[11px]">
+                                                {{ $trainee->name }}
+                                            </p>
+                                            <span class="px-1.5 py-0.5 bg-red-100 text-red-700 text-[8px] font-black uppercase rounded">
+                                                Deactivated
+                                            </span>
+                                        </div>
+                                        <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest mt-0.5">
+                                            Approved: {{ $trainee->monthly_approved_count }} days
+                                        </p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-right align-top">
+                                <div class="flex flex-col items-end gap-2">
+                                    @if($trainee->monthly_records_count > 0)
+                                        <span class="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-gray-600">
+                                            {{ $trainee->monthly_records_count }} log(s)
+                                        </span>
+                                        <a href="{{ route('hr.submissions.traineeMonthly', ['month' => $month, 'year' => $year, 'trainee_id' => $trainee->id]) }}"
+                                           class="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-brand-red hover:text-brand-navy transition">
+                                            <span>View History</span>
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                            </svg>
+                                        </a>
+                                    @else
+                                        <span class="text-[9px] text-gray-400 font-semibold uppercase tracking-widest">No logs</span>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="2" class="px-6 py-10 text-center">
+                                <div class="flex flex-col items-center opacity-40">
+                                    <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                                    </svg>
+                                    <p class="text-[10px] font-black uppercase tracking-widest">
+                                        No inactive trainee accounts for this period
+                                    </p>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
     @endif
 </div>
 

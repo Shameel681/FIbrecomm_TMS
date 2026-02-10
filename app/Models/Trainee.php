@@ -17,8 +17,9 @@ class Trainee extends Model
         'start_date', 
         'end_date',
         'status',
+        'deactivated_at',
         'bank_name',
-        'account_number',
+        'account_number', 
         'daily_rate'
     ];
 

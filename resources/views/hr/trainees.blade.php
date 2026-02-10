@@ -33,6 +33,28 @@
         </div>
     @endif
 
+    {{-- NOTIFICATION: INTERNSHIP PERIOD ENDED --}}
+    @if(isset($recentlyEnded) && $recentlyEnded->count() > 0)
+        <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-6 shadow-sm">
+            <h3 class="text-[10px] font-black text-yellow-800 uppercase tracking-widest mb-2">
+                Internship duration ended for {{ $recentlyEnded->count() }} trainee(s)
+            </h3>
+            <ul class="text-[10px] text-yellow-900 font-bold uppercase tracking-widest space-y-1">
+                @foreach($recentlyEnded as $ended)
+                    <li>
+                        {{ $ended->name }} 
+                        <span class="text-yellow-700 font-normal normal-case">
+                            (ended on {{ \Carbon\Carbon::parse($ended->end_date)->format('M d, Y') }})
+                        </span>
+                    </li>
+                @endforeach
+            </ul>
+            <p class="mt-2 text-[9px] text-yellow-700 font-semibold uppercase tracking-widest">
+                Their trainee status has been marked as completed and their accounts have been deactivated.
+            </p>
+        </div>
+    @endif
+
     {{-- Active Status Header --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6" data-aos="fade-down">
         <div class="col-span-2 bg-white p-8 border border-gray-100 rounded-2xl shadow-sm flex items-center justify-between">
@@ -105,12 +127,15 @@
     </div>
     @endif
 
-    {{-- SECTION 2: PERSONNEL DIRECTORY --}}
+    {{-- SECTION 2: ACTIVE PERSONNEL DIRECTORY --}}
     <div class="bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col overflow-hidden" data-aos="fade-up" data-aos-delay="200">
         <div class="p-6 border-b border-gray-50 bg-gray-50/50 flex justify-between items-center">
             <h3 class="text-[11px] font-black text-brand-navy uppercase tracking-[0.2em]">Personnel Directory</h3>
-            <div class="flex gap-4">
+            <div class="flex gap-4 items-center">
                 <input type="text" id="traineeSearch" placeholder="Search trainee name..." class="px-4 py-2 border border-gray-200 rounded-lg text-xs focus:ring-1 focus:ring-brand-red focus:outline-none w-64">
+                <a href="{{ route('hr.trainees.inactive') }}" class="px-4 py-2 text-[9px] font-black uppercase tracking-widest rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-800 hover:text-white transition">
+                    View Inactive Accounts
+                </a>
             </div>
         </div>
 
@@ -126,7 +151,7 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-50" id="traineeTableBody">
-                    @forelse($trainees as $trainee)
+                    @forelse($activeTrainees as $trainee)
                     <tr class="hover:bg-brand-red/[0.02] transition-colors group">
                         <td class="px-8 py-5">
                             <div class="flex items-center gap-4">
@@ -154,18 +179,57 @@
                         <td class="px-8 py-5 text-center">
                             @php
                                 $isActive = now()->between($trainee->start_date, $trainee->end_date);
+                                $accountActive = $trainee->user && $trainee->user->is_active;
                             @endphp
-                            @if($isActive)
-                                <span class="bg-green-100 text-green-700 text-[8px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-green-200 shadow-sm">Active Now</span>
-                            @else
-                                <span class="bg-gray-100 text-gray-400 text-[8px] font-black px-3 py-1 rounded-full uppercase tracking-widest">Completed</span>
-                            @endif
+                            <div class="flex flex-col items-center gap-3">
+                                @if($isActive && $accountActive)
+                                    <span class="bg-green-100 text-green-700 text-[8px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-green-200 shadow-sm">Active Now</span>
+                                @elseif(!$accountActive)
+                                    <span class="bg-red-100 text-red-700 text-[8px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-red-200 shadow-sm">Account Deactivated</span>
+                                @else
+                                    <span class="bg-gray-100 text-gray-400 text-[8px] font-black px-3 py-1 rounded-full uppercase tracking-widest">Completed</span>
+                                @endif
+                                
+                                {{-- Use relative URL to avoid CSRF/session issues if APP_URL scheme/host differs from current host --}}
+                                <form action="{{ route('hr.trainees.toggle_status', $trainee->id, false) }}" method="POST" class="flex items-center gap-2">
+                                    @csrf
+                                    <select 
+                                        name="status" 
+                                        class="text-[9px] font-black uppercase tracking-widest px-3 py-1.5 border border-gray-200 rounded-lg focus:ring-1 focus:ring-brand-navy focus:border-brand-navy outline-none bg-white"
+                                    >
+                                        <option value="1" {{ $accountActive ? 'selected' : '' }}>Active</option>
+                                        <option value="0" {{ !$accountActive ? 'selected' : '' }}>Inactive</option>
+                                    </select>
+                                    <button 
+                                        type="submit"
+                                        class="px-3 py-1.5 bg-brand-navy text-white text-[9px] font-black uppercase tracking-widest rounded-lg hover:bg-brand-red transition-all shadow-sm"
+                                    >
+                                        Update Status
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                         <td class="px-8 py-5 text-right">
                             <div class="flex justify-end gap-2">
-                                <button class="text-brand-navy hover:text-brand-red transition-colors p-2 bg-gray-50 rounded-lg border border-gray-100 hover:border-brand-red/20">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                </button>
+                                {{-- Eye button: move deactivated trainee to Inactive/Deactivated container --}}
+                                @if($trainee->user && !$trainee->user->is_active)
+                                    <form action="{{ route('hr.trainees.archive', $trainee->id, false) }}" method="POST" onsubmit="return confirm('Move this trainee to the Inactive/Deactivated list?');">
+                                        @csrf
+                                        <button type="submit" class="text-brand-navy hover:text-brand-red transition-colors p-2 bg-gray-50 rounded-lg border border-gray-100 hover:border-brand-red/20" title="Move to Inactive/Deactivated list">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                @else
+                                    <button class="text-brand-navy opacity-40 cursor-not-allowed p-2 bg-gray-50 rounded-lg border border-gray-100" title="Available only for deactivated accounts" disabled>
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                    </button>
+                                @endif
                             </div>
                         </td>
                     </tr>
@@ -178,6 +242,100 @@
                             </div>
                         </td>
                     </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {{-- SECTION 3: INACTIVE / DEACTIVATED TRAINEE CONTAINER --}}
+    <div class="bg-gray-50 rounded-2xl border border-gray-200 shadow-inner flex flex-col overflow-hidden mt-8" data-aos="fade-up" data-aos-delay="250">
+        <div class="p-6 border-b border-gray-200 bg-gray-100 flex justify-between items-center">
+            <div>
+                <h3 class="text-[11px] font-black text-brand-navy uppercase tracking-[0.2em]">Inactive / Deactivated Trainees</h3>
+                <p class="text-[9px] text-gray-500 font-bold uppercase mt-1">Accounts that have been deactivated for 3+ days or manually archived</p>
+            </div>
+            <span class="px-3 py-1 bg-gray-800 text-white text-[9px] font-black rounded-full uppercase tracking-widest">
+                {{ $archivedTrainees->count() }} Inactive
+            </span>
+        </div>
+
+        <div class="overflow-y-auto max-h-[400px] custom-scrollbar">
+            <table class="w-full text-left border-collapse">
+                <thead class="sticky top-0 bg-gray-50 z-10 shadow-sm">
+                    <tr class="text-[9px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-200">
+                        <th class="px-8 py-4">Trainee</th>
+                        <th class="px-8 py-4 text-center">Contact Information</th>
+                        <th class="px-8 py-4 text-center">Internship Period</th>
+                        <th class="px-8 py-4 text-center">Deactivated Since</th>
+                        <th class="px-8 py-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    @forelse($archivedTrainees as $trainee)
+                        <tr class="hover:bg-gray-100/70 transition-colors group">
+                            <td class="px-8 py-5">
+                                <div class="flex items-center gap-4">
+                                    <div class="h-10 w-10 bg-gray-400 text-white flex items-center justify-center font-black rounded-lg text-sm group-hover:bg-brand-red transition-colors">
+                                        {{ strtoupper(substr($trainee->name, 0, 1)) }}
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-black text-brand-navy uppercase">{{ $trainee->name }}</p>
+                                        <p class="text-[9px] font-bold text-gray-400">REG-ID: {{ str_pad($trainee->id, 5, '0', STR_PAD_LEFT) }}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-8 py-5 text-center">
+                                <p class="text-[10px] font-black text-brand-navy uppercase tracking-tighter">{{ $trainee->email }}</p>
+                                @if($trainee->user)
+                                    <span class="text-[8px] font-bold text-gray-400 uppercase tracking-widest bg-gray-50 px-2 py-0.5 rounded border border-gray-100">
+                                        User: {{ $trainee->user->email }}
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="px-8 py-5 text-center">
+                                <div class="inline-flex flex-col">
+                                    <span class="text-[10px] font-black text-brand-navy uppercase">
+                                        {{ \Carbon\Carbon::parse($trainee->start_date)->format('M d, Y') }}
+                                    </span>
+                                    <span class="text-[9px] font-bold text-gray-400 uppercase">
+                                        to {{ \Carbon\Carbon::parse($trainee->end_date)->format('M d, Y') }}
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="px-8 py-5 text-center">
+                                <span class="text-[10px] font-black text-gray-700 uppercase">
+                                    {{ $trainee->deactivated_at ? \Carbon\Carbon::parse($trainee->deactivated_at)->format('M d, Y') : 'Unknown' }}
+                                </span>
+                            </td>
+                            <td class="px-8 py-5 text-right">
+                                @php
+                                    $canReactivate = $trainee->user && !$trainee->user->is_active;
+                                @endphp
+                                @if($canReactivate)
+                                    <form action="{{ route('hr.trainees.toggle_status', $trainee->id, false) }}" method="POST" onsubmit="return confirm('Reactivate this trainee account and move it back to the active list?');" class="inline-flex">
+                                        @csrf
+                                        <input type="hidden" name="status" value="1">
+                                        <button type="submit" class="px-4 py-2 bg-green-600 text-white text-[9px] font-black uppercase tracking-widest rounded-lg hover:bg-green-700 transition shadow-sm">
+                                            Reactivate
+                                        </button>
+                                    </form>
+                                @else
+                                    <span class="text-[9px] text-gray-400 font-semibold uppercase tracking-widest">Already Active</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="p-10 text-center">
+                                <div class="flex flex-col items-center text-gray-300">
+                                    <svg class="w-10 h-10 mb-3 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                    </svg>
+                                    <p class="text-[10px] font-black uppercase tracking-[0.5em]">No inactive trainees yet</p>
+                                </div>
+                            </td>
+                        </tr>
                     @endforelse
                 </tbody>
             </table>

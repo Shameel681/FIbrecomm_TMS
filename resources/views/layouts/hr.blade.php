@@ -164,7 +164,8 @@
             </nav>
 
             <div class="p-6 border-t border-white/5">
-                <form action="{{ route('logout') }}" method="POST">
+                {{-- Use relative URL to avoid CSRF/session issues if APP_URL scheme/host differs from current host --}}
+                <form action="{{ route('logout', [], false) }}" method="POST">
                     @csrf
                     <button type="submit" class="group relative w-full bg-brand-red text-white py-4 rounded-sm font-black text-[10px] uppercase tracking-[0.2em] overflow-hidden shadow-lg">
                         <span class="relative z-10 transition-colors duration-300 group-hover:text-brand-navy">LOG OUT</span>

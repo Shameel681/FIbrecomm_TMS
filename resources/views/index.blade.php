@@ -96,7 +96,7 @@
                 </div>
                 <h3 class="text-xl font-bold text-brand-navy mb-3">Opportunities</h3>
                 <p class="text-sm text-gray-500">Find a role that matches your academic background and career goals.</p>
-            </div>
+                        </div>
 
             {{-- 1. Home Card 3 --}}
             <div class="bg-white p-8 border border-gray-200 rounded-2xl shadow-sm text-center flex flex-col items-center" data-aos="fade-up" data-aos-delay="300">
@@ -197,9 +197,9 @@
                             Provides seamless intercity and **cross-border connectivity** for global solutions.
                         </p>
                     </div>
-                </div>
-            </div>
-        </div>
+                                </div>
+                            </div>
+                        </div>
 
         {{-- 3. Core Offerings --}}
     <h3 class="text-2xl font-bold text-brand-navy text-center mb-10 flex items-center justify-center gap-3">
@@ -227,10 +227,10 @@
             <svg class="h-10 w-10" fill="currentColor" viewBox="0 0 24 24">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M4 4a1 1 0 0 1 1-1h14a1 1 0 1 1 0 2v14a1 1 0 1 1 0 2H5a1 1 0 1 1 0-2V5a1 1 0 0 1-1-1Zm5 2a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H9Zm5 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-1Zm-5 4a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H9Zm5 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1h-1Zm-3 4a2 2 0 0 0-2 2v3h2v-3h2v3h2v-3a2 2 0 0 0-2-2h-2Z" />
             </svg>
-        </div>
+                                </div>
         <h4 class="font-bold text-brand-navy text-lg mb-1">Infrastructure</h4>
         <p class="text-xs text-gray-500">Robust network foundations.</p>
-    </div>
+                            </div>
 
     {{-- Card 3 --}}
     <div class="offering-card bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center flex flex-col items-center cursor-default" data-aos="zoom-in" data-aos-delay="300">
@@ -240,10 +240,10 @@
                 <path d="M12 9a11.9 11.9 0 0 0-7.37 2.46 1 1 0 0 0-.13 1.46l1.53 1.76a1 1 0 0 0 1.33.14A8 8 0 0 1 12 13a8 8 0 0 1 4.64 1.82 1 1 0 0 0 1.33-.14l1.53-1.76a1 1 0 0 0-.13-1.46A11.9 11.9 0 0 0 12 9Z"/>
                 <path d="M12 15a6 6 0 0 0-3.47 1.11 1 1 0 0 0-.16 1.44l2.02 2.31a1 1 0 0 0 1.22.22l.39-.2.39.2a1 1 0 0 0 1.22-.22l2.02-2.31a1 1 0 0 0-.16-1.44A6 6 0 0 0 12 15Z"/>
             </svg>
-        </div>
+                                </div>
         <h4 class="font-bold text-brand-navy text-lg mb-1">Internet</h4>
         <p class="text-xs text-gray-500">High-speed, reliable connectivity.</p>
-    </div>
+                            </div>
 
     {{-- Card 4 --}}
     <div class="offering-card bg-white p-6 rounded-xl border border-gray-100 shadow-sm text-center flex flex-col items-center cursor-default" data-aos="zoom-in" data-aos-delay="400">
@@ -256,10 +256,10 @@
         </div>
         <h4 class="font-bold text-brand-navy text-lg mb-1">Value Added</h4>
         <p class="text-xs text-gray-500">Enhancing services and solutions.</p>
-              </div>
-        </div>
-        </div>
-    </section>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
 
     {{-- Section: INTERNSHIP FORM --}}
     <section id="internship" class="py-24 px-10 bg-gray-50 border-b border-gray-200">
@@ -302,9 +302,9 @@
                         </div>
                         <button onclick="this.parentElement.remove()" class="ml-auto text-gray-400 hover:text-gray-600">&times;</button>
                     </div>
-                </div>
+                                </div>
             @endif
-        </div>
+                            </div>
 
         <form action="{{ route('trainee.store') }}" method="POST" enctype="multipart/form-data" class="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden">
             @csrf
@@ -331,14 +331,14 @@
                             <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">3. Phone No. (10-11 digits)</label>
                             <input type="tel" name="phone" value="{{ old('phone') }}" required pattern="[0-9]{10,11}"
                                 class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-brand-red focus:ring-2 focus:ring-brand-red/20 outline-none transition-all" placeholder="0123456789">
-                        </div>
+                                </div>
                         <div class="md:col-span-2">
                             <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">4. Current Address</label>
                             <textarea name="address" rows="3" required 
                                 class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-brand-red focus:ring-2 focus:ring-brand-red/20 outline-none transition-all resize-none" placeholder="">{{ old('address') }}</textarea>
-                        </div>
-                    </div>
-                </div>
+                                </div>
+                                </div>
+                            </div>
 
                 <hr class="mb-10 border-gray-100">
 
@@ -373,12 +373,12 @@
                                     class="border-b border-gray-300 focus:border-brand-red outline-none text-sm pb-1 w-32 disabled:bg-gray-100 italic" placeholder="Specify level">
                             </div>
                         </div>
-                        <div>
+                                    <div>
                             <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">8. Expected Graduation</label>
                             <input type="date" name="grad_date" value="{{ old('grad_date') }}" required class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-brand-red outline-none transition-all">
                         </div>
                     </div>
-                </div>
+                                    </div>
 
                 <hr class="mb-10 border-gray-100">
 
@@ -392,17 +392,17 @@
                         <div class="md:col-span-2">
                             <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">9. Duration (Months)</label>
                             <input type="number" name="duration" value="{{ old('duration') }}" min="1" max="12" required class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-brand-red outline-none transition-all" placeholder="e.g. 4">
-                        </div>
-                        
+                                </div>
+
                         {{-- UPDATED DATE SECTION --}}
-                        <div>
+                                    <div>
                             <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">10. Preferred Start Date</label>
                             <input type="date" name="start_date" value="{{ old('start_date') }}" required class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-brand-red outline-none transition-all">
-                        </div>
+                                    </div>
                         <div>
                             <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">11. Expected End Date</label>
                             <input type="date" name="expected_end_date" value="{{ old('expected_end_date') }}" required class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-brand-red outline-none transition-all">
-                        </div>
+                                </div>
 
                         <div class="md:col-span-2">
                             <label class="block text-xs font-bold text-brand-navy mb-2 uppercase">12. Area of Interest</label>
@@ -428,8 +428,8 @@
                                 <label class="flex items-center gap-2 font-medium text-gray-700 cursor-pointer">
                                     <input type="radio" name="coursework_req" value="no" {{ old('coursework_req') == 'no' ? 'checked' : '' }} class="accent-brand-red"> No
                                 </label>
-                            </div>
-                        </div>
+                                    </div>
+                                </div>
 
                         <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                             <div>
@@ -453,8 +453,8 @@
                 </button>
             </div>
         </form>
-    </div>
-    </section>
+                        </div>
+                    </section>
 
 
     {{-- Section: OUR LOCATION --}}
