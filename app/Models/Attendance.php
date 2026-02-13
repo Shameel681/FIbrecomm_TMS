@@ -14,9 +14,14 @@ class Attendance extends Model
         'date',
         'clock_in',
         'status',
+        'is_auto_approved',
         'approved_by',
         'remarks',
         'trainee_remark'
+    ];
+
+    protected $casts = [
+        'is_auto_approved' => 'boolean',
     ];
 
     public function trainee()

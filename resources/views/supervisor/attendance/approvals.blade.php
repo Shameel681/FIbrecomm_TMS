@@ -28,48 +28,51 @@
         </p>
     </div>
 
+    {{-- Pending = outside clock-in (needs your approval) --}}
+    <div class="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl">
+        <p class="text-[10px] font-black text-amber-800 uppercase tracking-widest">
+            These are <strong>outside clock-in</strong> requests. Trainees clocked in from outside company network and need your approval.
+        </p>
+    </div>
+
     {{-- Table Card --}}
     <div class="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden" data-aos="fade-up">
         <table class="w-full text-left">
             <thead class="bg-gray-100 text-brand-navy uppercase text-[10px] font-black tracking-widest border-b">
                 <tr>
-                    <th class="px-8 py-4">Trainee Name</th>
-                    <th class="px-8 py-4">Date</th>
-                    <th class="px-8 py-4">Clock In</th>
+                    <th class="px-8 py-4">Trainee</th>
+                    <th class="px-8 py-4">Date / Time</th>
+                    <th class="px-8 py-4">Trainee remark</th>
                     <th class="px-8 py-4 text-center">Actions</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-100">
                 @forelse($pendingAttendances as $attendance)
                     <tr class="hover:bg-blue-50 transition-colors">
-                        <td class="px-8 py-4 font-bold text-brand-navy uppercase text-xs">
-                            {{ $attendance->trainee?->user?->name ?? $attendance->trainee?->name ?? 'Unknown Trainee' }}
+                        <td class="px-8 py-4">
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-0.5 bg-amber-100 text-amber-700 text-[9px] font-black rounded uppercase">Outside</span>
+                                <span class="font-bold text-brand-navy uppercase text-xs">
+                                    {{ $attendance->trainee?->user?->name ?? $attendance->trainee?->name ?? 'Unknown' }}
+                                </span>
+                            </div>
                         </td>
-                        <td class="px-8 py-4 text-xs font-bold text-gray-500">
+                        <td class="px-8 py-4 text-xs font-bold text-gray-600">
                             {{ $attendance->date ? \Carbon\Carbon::parse($attendance->date)->format('d M Y') : '-' }}
+                            <span class="block text-[10px] font-black text-blue-600 mt-0.5">{{ $attendance->clock_in ? \Carbon\Carbon::parse($attendance->clock_in)->format('h:i A') : '-' }}</span>
                         </td>
-                        <td class="px-8 py-4 text-xs font-black text-blue-600">
-                            {{ $attendance->clock_in ? \Carbon\Carbon::parse($attendance->clock_in)->format('h:i A') : '-' }}
+                        <td class="px-8 py-4 text-xs text-gray-600 max-w-xs">
+                            <span class="line-clamp-2" title="{{ $attendance->trainee_remark ?? '-' }}">{{ $attendance->trainee_remark ?? '—' }}</span>
                         </td>
                         <td class="px-8 py-4">
                             <div class="flex justify-center gap-3">
-                                {{-- Approve --}}
                                 <form action="{{ route('supervisor.attendance.approve', $attendance->id) }}" method="POST">
                                     @csrf
-                                    <button
-                                        type="submit"
-                                        class="bg-blue-600 text-white px-5 py-2 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-brand-navy transition shadow"
-                                    >
+                                    <button type="submit" class="bg-blue-600 text-white px-5 py-2 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-brand-navy transition shadow">
                                         Approve
                                     </button>
                                 </form>
-
-                                {{-- Reject Button (opens modal) --}}
-                                <button
-                                    type="button"
-                                    onclick="openRejectModal({{ $attendance->id }})"
-                                    class="border-2 border-red-500 text-red-500 px-5 py-2 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-red-500 hover:text-white transition shadow"
-                                >
+                                <button type="button" onclick="openRejectModal({{ $attendance->id }})" class="border-2 border-red-500 text-red-500 px-5 py-2 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-red-500 hover:text-white transition shadow">
                                     Reject
                                 </button>
                             </div>
@@ -79,7 +82,7 @@
                     <tr>
                         <td colspan="4" class="px-8 py-16 text-center">
                             <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">
-                                No pending attendance requests
+                                No pending outside clock-in requests
                             </p>
                         </td>
                     </tr>

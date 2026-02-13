@@ -88,13 +88,13 @@
 
                 <div class="h-8 w-px bg-gray-200 mx-1 hidden md:block"></div>
 
-                <button
-                    type="button"
-                    onclick="openSetRateModal()"
-                    class="bg-white text-brand-navy px-5 py-2.5 rounded-lg text-[11px] font-black uppercase tracking-[0.2em] hover:bg-brand-navy hover:text-white transition-all duration-300 border-2 border-brand-navy/10 shadow-sm flex items-center gap-2"
-                >
+                <button type="button" onclick="openSetRateModal()" class="bg-white text-brand-navy px-5 py-2.5 rounded-lg text-[11px] font-black uppercase tracking-[0.2em] hover:bg-brand-navy hover:text-white transition-all duration-300 border-2 border-brand-navy/10 shadow-sm flex items-center gap-2">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     Allowance Rate
+                </button>
+                <button type="button" onclick="openCompanyNetworkModal()" class="bg-white text-green-700 px-5 py-2.5 rounded-lg text-[11px] font-black uppercase tracking-[0.2em] hover:bg-green-600 hover:text-white transition-all duration-300 border-2 border-green-200 shadow-sm flex items-center gap-2">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg>
+                    Company network (auto-approve)
                 </button>
             </div>
         </div>
@@ -456,6 +456,32 @@
     </div>
 </div>
 
+{{-- Company network IPs (trainee auto-approve on clock-in) --}}
+<div id="companyNetworkModal" class="fixed inset-0 bg-green-900/40 hidden items-center justify-center z-50 backdrop-blur-sm transition-all duration-300">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 border border-green-200 overflow-hidden" data-aos="zoom-in" data-aos-duration="300">
+        <div class="p-8 border-b border-gray-100 bg-green-700 relative">
+            <div class="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-bl-full"></div>
+            <h3 class="text-xl font-black text-white uppercase tracking-tighter">Company network (auto-approve)</h3>
+            <p class="text-[10px] font-bold text-white/80 uppercase tracking-widest mt-1">
+                IPs or prefixes: trainee clock-in from these networks is auto-approved. Comma-separated, e.g. 192.168.1.,10.0.0.
+            </p>
+        </div>
+        <form method="POST" action="{{ route('hr.submissions.traineeMonthly.setCompanyNetworkIps') }}" class="p-8 space-y-6">
+            @csrf
+            @method('PUT')
+            <div class="space-y-3">
+                <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Allowed IPs or prefixes</label>
+                <textarea name="ips" id="companyNetworkIpsInput" rows="3" maxlength="500" placeholder="192.168.1., 10.0.0., 127.0.0.1" class="w-full px-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl outline-none font-mono text-sm focus:border-green-500 focus:bg-white transition-all resize-none">{{ $companyClockInIps ?? '' }}</textarea>
+                <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">Leave empty to require supervisor approval for all clock-ins.</p>
+            </div>
+            <div class="flex items-center gap-3 pt-4">
+                <button type="button" onclick="closeCompanyNetworkModal()" class="flex-1 px-6 py-3 border-2 border-gray-200 text-gray-500 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-gray-50 transition">Cancel</button>
+                <button type="submit" class="flex-1 px-6 py-3 bg-green-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-green-700 transition shadow">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 @push('scripts')
 <script>
 function openSetRateModal() {
@@ -474,11 +500,20 @@ function closeSetRateModal() {
     }
 }
 
+function openCompanyNetworkModal() {
+    const modal = document.getElementById('companyNetworkModal');
+    if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
+}
+function closeCompanyNetworkModal() {
+    const modal = document.getElementById('companyNetworkModal');
+    if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+}
+
 document.addEventListener('click', function(e) {
-    const modal = document.getElementById('setRateModal');
-    if (modal && e.target === modal) {
-        closeSetRateModal();
-    }
+    const setRate = document.getElementById('setRateModal');
+    const companyNet = document.getElementById('companyNetworkModal');
+    if (setRate && e.target === setRate) closeSetRateModal();
+    if (companyNet && e.target === companyNet) closeCompanyNetworkModal();
 });
 
 document.addEventListener('DOMContentLoaded', function() {

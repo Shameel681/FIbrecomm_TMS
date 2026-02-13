@@ -13,6 +13,30 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class AttendanceController extends Controller
 {
     /**
+     * Check if the request IP is considered "on company network" for auto-approve.
+     * Uses system setting "company_clock_in_ips": comma-separated IPs or prefixes (e.g. "192.168.1.,10.0.0.").
+     */
+    private static function isOnCompanyNetwork(string $clientIp): bool
+    {
+        $allowed = SystemSetting::get('company_clock_in_ips', '');
+        if ($allowed === '') {
+            return false;
+        }
+        $list = array_map('trim', explode(',', $allowed));
+        foreach ($list as $entry) {
+            if ($entry === $clientIp) {
+                return true;
+            }
+            if (str_ends_with($entry, '.') && str_starts_with($clientIp, $entry)) {
+                return true;
+            }
+            if (!str_ends_with($entry, '.') && str_starts_with($clientIp, $entry . '.')) {
+                return true;
+            }
+        }
+        return false;
+    }
+    /**
      * Trainee View: Show Clock-In button and History
      */
     public function index(Request $request)
@@ -70,12 +94,12 @@ class AttendanceController extends Controller
             return back()->with('error', 'You cannot clock in yet. Please wait for HR to assign your supervisor.');
         }
 
-        // VALIDATION 2: Prevent Double Clock-In
-        $exists = Attendance::where('trainee_id', $trainee->id)
-                            ->where('date', $today)
-                            ->exists();
+        // VALIDATION 2: Prevent double clock-in unless today's record is rejected (allow resubmit)
+        $todayRecord = Attendance::where('trainee_id', $trainee->id)
+                                 ->where('date', $today)
+                                 ->first();
 
-        if ($exists) {
+        if ($todayRecord && $todayRecord->status !== 'rejected') {
             return back()->with('error', 'You have already clocked in for today.');
         }
 
@@ -84,16 +108,48 @@ class AttendanceController extends Controller
             'trainee_remark' => ['required', 'string', 'min:5', 'max:500'],
         ]);
 
-        // EXECUTION: Create the record
-        Attendance::create([
-            'trainee_id' => $trainee->id,
-            'date' => $today,
-            'clock_in' => now()->toTimeString(),
-            'status' => 'pending', // Waiting for supervisor
-            'trainee_remark' => $validated['trainee_remark'],
-        ]);
+        $clientIp = $request->ip() ?? '';
+        $onCompanyNetwork = self::isOnCompanyNetwork($clientIp);
 
-        return back()->with('success', 'Clock-in successful! Awaiting supervisor approval.');
+        if ($todayRecord && $todayRecord->status === 'rejected') {
+            // Resubmit: update the rejected record and send again for approval (or auto-approve if on network)
+            $todayRecord->update([
+                'clock_in'         => now()->toTimeString(),
+                'status'           => $onCompanyNetwork ? 'approved' : 'pending',
+                'is_auto_approved' => $onCompanyNetwork,
+                'approved_by'      => null,
+                'remarks'          => null,
+                'trainee_remark'   => $validated['trainee_remark'],
+            ]);
+            if ($onCompanyNetwork) {
+                return back()->with('success', 'Resubmission successful! You are on company network — attendance has been auto-approved.');
+            }
+            return back()->with('success', 'Attendance resubmitted. Your supervisor will review this request again.');
+        }
+
+        if ($onCompanyNetwork) {
+            Attendance::create([
+                'trainee_id'       => $trainee->id,
+                'date'             => $today,
+                'clock_in'         => now()->toTimeString(),
+                'status'           => 'approved',
+                'is_auto_approved' => true,
+                'approved_by'      => null,
+                'trainee_remark'   => $validated['trainee_remark'],
+            ]);
+            return back()->with('success', 'Clock-in successful! You are on company network — attendance has been auto-approved.');
+        }
+
+        // Outside clock-in: needs supervisor approval
+        Attendance::create([
+            'trainee_id'       => $trainee->id,
+            'date'             => $today,
+            'clock_in'         => now()->toTimeString(),
+            'status'           => 'pending',
+            'is_auto_approved' => false,
+            'trainee_remark'   => $validated['trainee_remark'],
+        ]);
+        return back()->with('success', 'Clock-in recorded. You are outside company network — your supervisor will review and approve this request.');
     }
 
     /**
@@ -108,7 +164,7 @@ class AttendanceController extends Controller
             $query->where('supervisor_id', $supervisorId);
         })
         ->where('status', 'pending')
-        ->with('trainee') // Eager load to show Trainee Name
+        ->with(['trainee', 'trainee.user'])
         ->orderBy('date', 'desc')
         ->get();
 

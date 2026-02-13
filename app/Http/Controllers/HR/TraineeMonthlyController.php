@@ -119,8 +119,9 @@ class TraineeMonthlyController extends Controller
             }
         }
 
-        // Get global default rate
+        // Get global default rate and company network IPs (for trainee auto-approve on clock-in)
         $globalDefaultRate = (float) SystemSetting::get('allowance_rate_per_day', 30);
+        $companyClockInIps = SystemSetting::get('company_clock_in_ips', '');
 
         return view('hr.submissions.traineemonthly', [
             'periodChosen'      => $periodChosen,
@@ -133,9 +134,27 @@ class TraineeMonthlyController extends Controller
             'year'              => $year,
             'selectedDate'      => $selectedDate,
             'selectedTraineeId' => $selectedTraineeId,
-            'unreadSubmissions' => $unreadSubmissions,
-            'globalDefaultRate' => $globalDefaultRate,
+            'unreadSubmissions'   => $unreadSubmissions,
+            'globalDefaultRate'  => $globalDefaultRate,
+            'companyClockInIps'  => $companyClockInIps,
         ]);
+    }
+
+    /**
+     * Update company network IPs for auto-approve (trainee clock-in on company WiFi).
+     * Value: comma-separated IPs or prefixes, e.g. "192.168.1.,10.0.0."
+     */
+    public function setCompanyNetworkIps(Request $request)
+    {
+        $validated = $request->validate([
+            'ips' => ['nullable', 'string', 'max:500'],
+        ]);
+        $value = trim($validated['ips'] ?? '');
+        SystemSetting::set('company_clock_in_ips', $value);
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'Company network IPs updated.']);
+        }
+        return redirect()->route('hr.submissions.traineeMonthly')->with('success', 'Company network IPs updated.');
     }
 
     /**
