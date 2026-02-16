@@ -93,8 +93,9 @@
                     @endif
                 </div>
             @endif
-            <form action="{{ route('trainee.attendance.clockIn') }}" method="POST" class="p-6">
+            <form id="clockInForm" action="{{ route('trainee.attendance.clockIn') }}" method="POST" class="p-6">
                 @csrf
+                <input type="hidden" name="client_ip" id="clientIp" value="">
                 <div class="mb-5">
                     <label class="block text-xs font-black text-gray-600 uppercase tracking-widest mb-2">
                         Daily remarks <span class="text-red-500">*</span>
@@ -234,4 +235,21 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+(function() {
+    var input = document.getElementById('clientIp');
+    if (!input) return;
+    fetch('https://api.ipify.org?format=json')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data && typeof data.ip === 'string') {
+                input.value = data.ip;
+            }
+        })
+        .catch(function() {});
+})();
+</script>
+@endpush
 @endsection

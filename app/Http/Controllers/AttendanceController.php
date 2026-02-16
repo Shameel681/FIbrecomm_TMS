@@ -108,9 +108,14 @@ class AttendanceController extends Controller
         // VALIDATION 3: Require trainee remarks
         $validated = $request->validate([
             'trainee_remark' => ['required', 'string', 'min:5', 'max:500'],
+            'client_ip'      => ['nullable', 'string', 'max:45'], // IPv4 or IPv6 from api.ipify.org
         ]);
 
-        $clientIp = $request->ip() ?? '';
+        // Use trainee's IP from api.ipify.org (sent by frontend) if valid, else fall back to request IP
+        $clientIp = $request->input('client_ip');
+        if (!$clientIp || !preg_match('/^[a-fA-F0-9.:]+$/', $clientIp)) {
+            $clientIp = $request->ip() ?? '';
+        }
         $onCompanyNetwork = self::isOnCompanyNetwork($clientIp);
 
         if ($todayRecord && $todayRecord->status === 'rejected') {
