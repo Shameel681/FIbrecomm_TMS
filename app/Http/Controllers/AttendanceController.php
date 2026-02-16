@@ -7,8 +7,10 @@ use App\Models\Attendance;
 use App\Models\SystemSetting;
 use App\Models\Trainee;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Mail\OutsideClockInPendingMail;
 
 class AttendanceController extends Controller
 {
@@ -124,6 +126,10 @@ class AttendanceController extends Controller
             if ($onCompanyNetwork) {
                 return back()->with('success', 'Resubmission successful! You are on company network — attendance has been auto-approved.');
             }
+            $trainee->load('supervisor');
+            if ($trainee->supervisor && $trainee->supervisor->email) {
+                Mail::to($trainee->supervisor->email)->send(new OutsideClockInPendingMail($trainee, $trainee->supervisor, $todayRecord->fresh()));
+            }
             return back()->with('success', 'Attendance resubmitted. Your supervisor will review this request again.');
         }
 
@@ -141,7 +147,7 @@ class AttendanceController extends Controller
         }
 
         // Outside clock-in: needs supervisor approval
-        Attendance::create([
+        $attendance = Attendance::create([
             'trainee_id'       => $trainee->id,
             'date'             => $today,
             'clock_in'         => now()->toTimeString(),
@@ -149,6 +155,12 @@ class AttendanceController extends Controller
             'is_auto_approved' => false,
             'trainee_remark'   => $validated['trainee_remark'],
         ]);
+
+        $trainee->load('supervisor');
+        if ($trainee->supervisor && $trainee->supervisor->email) {
+            Mail::to($trainee->supervisor->email)->send(new OutsideClockInPendingMail($trainee, $trainee->supervisor, $attendance));
+        }
+
         return back()->with('success', 'Clock-in recorded. You are outside company network — your supervisor will review and approve this request.');
     }
 
