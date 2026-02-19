@@ -11,11 +11,13 @@ use App\Http\Controllers\Supervisor\SupervisorDashboardController;
 use App\Http\Controllers\Supervisor\SupervisorProfileController;
 use App\Http\Controllers\HR\HRDashboardController;
 use App\Http\Controllers\HR\TraineeMonthlyController;
+use App\Http\Controllers\HR\HRProfileController;
 use App\Http\Controllers\HR\SettingController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminSvController;
 use App\Http\Controllers\Admin\AdminTraineeController;
 use App\Http\Controllers\Admin\AdminProfileController;
+use App\Http\Controllers\Admin\AdminSettingController;
 use App\Http\Controllers\AttendanceController;
 
 /*
@@ -93,6 +95,10 @@ Route::middleware(['auth', 'role:admin', 'no.cache'])->prefix('admin')->name('ad
     Route::put('/profile/update', [AdminProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [AdminProfileController::class, 'updatePassword'])->name('profile.password');
     Route::post('/emergency-exit', [AdminProfileController::class, 'emergencyExit'])->name('emergency.exit');
+
+    // Settings: Auto-approve clock-in IPs (company network) – admin only
+    Route::get('/settings/company-network-ips', [AdminSettingController::class, 'companyNetworkIps'])->name('settings.companyNetworkIps');
+    Route::put('/settings/company-network-ips', [AdminSettingController::class, 'updateCompanyNetworkIps'])->name('settings.companyNetworkIps.update');
 });
 
 /*
@@ -128,11 +134,15 @@ Route::middleware(['auth', 'role:hr', 'no.cache'])->prefix('hr')->name('hr.')->g
     Route::get('/submissions/trainee-monthly', [TraineeMonthlyController::class, 'index'])->name('submissions.traineeMonthly');
     Route::get('/submissions/trainee-monthly/export/{trainee}', [TraineeMonthlyController::class, 'exportPdf'])->name('submissions.traineeMonthly.export');
     Route::put('/submissions/trainee-monthly/set-global-rate', [TraineeMonthlyController::class, 'setGlobalRate'])->name('submissions.traineeMonthly.setGlobalRate');
-    Route::put('/submissions/trainee-monthly/company-network-ips', [TraineeMonthlyController::class, 'setCompanyNetworkIps'])->name('submissions.traineeMonthly.setCompanyNetworkIps');
 
     // Settings: Allowance rate
     Route::get('/settings/allowance', [SettingController::class, 'editAllowance'])->name('settings.allowance.edit');
     Route::put('/settings/allowance', [SettingController::class, 'updateAllowance'])->name('settings.allowance.update');
+
+    // Profile
+    Route::get('/profile', [HRProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [HRProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [HRProfileController::class, 'updatePassword'])->name('profile.password');
 });
 
 /*

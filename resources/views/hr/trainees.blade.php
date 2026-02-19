@@ -133,9 +133,6 @@
             <h3 class="text-[11px] font-black text-brand-navy uppercase tracking-[0.2em]">Personnel Directory</h3>
             <div class="flex gap-4 items-center">
                 <input type="text" id="traineeSearch" placeholder="Search trainee name..." class="px-4 py-2 border border-gray-200 rounded-lg text-xs focus:ring-1 focus:ring-brand-red focus:outline-none w-64">
-                <a href="{{ route('hr.trainees.inactive') }}" class="px-4 py-2 text-[9px] font-black uppercase tracking-widest rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-800 hover:text-white transition">
-                    View Inactive Accounts
-                </a>
             </div>
         </div>
 

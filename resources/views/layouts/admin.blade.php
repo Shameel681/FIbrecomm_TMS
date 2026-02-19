@@ -128,6 +128,13 @@
             <span class="relative z-10">Manage Trainee</span>
         </a>
 
+        {{-- Auto-approve clock-in IPs --}}
+        <a href="{{ route('admin.settings.companyNetworkIps') }}" 
+           class="sidebar-link {{ Request::is('admin/settings/company-network-ips*') ? 'active-link' : '' }} group flex items-center px-4 py-3.5 rounded transition-all text-[11px] font-black uppercase tracking-widest relative">
+            <div class="indicator"></div>
+            <span class="relative z-10">Clock-in IPs</span>
+        </a>
+
         {{-- Manage Admin Profile --}}
         <a href="{{ route('admin.profile.edit') }}" 
            class="sidebar-link {{ Request::is('admin/profile*') ? 'active-link' : '' }} group flex items-center px-4 py-3.5 rounded transition-all text-[11px] font-black uppercase tracking-widest relative">

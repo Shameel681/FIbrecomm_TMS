@@ -103,7 +103,7 @@
                 <a href="{{ route('trainee.profile') }}" 
                    class="sidebar-link {{ Request::is('trainee/profile*') ? 'active-link' : '' }} group flex items-center px-4 py-3.5 rounded transition-all text-[11px] font-black uppercase tracking-widest relative">
                     <div class="indicator"></div>
-                    <span class="relative z-10">My Profile</span>
+                    <span class="relative z-10">Manage Profile</span>
                 </a>
             </nav>
 

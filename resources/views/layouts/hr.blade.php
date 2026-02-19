@@ -161,6 +161,12 @@
                     <div class="indicator"></div>
                     <span class="relative z-10">Monthly Attendance</span>
                 </a>
+
+                <a href="{{ route('hr.profile.edit') }}" 
+                   class="sidebar-link {{ Request::is('hr/profile*') ? 'active-link' : '' }} group flex items-center px-4 py-3.5 rounded transition-all text-[11px] font-black uppercase tracking-widest relative">
+                    <div class="indicator"></div>
+                    <span class="relative z-10">Manage Profile</span>
+                </a>
             </nav>
 
             <div class="p-6 border-t border-white/5">
@@ -179,7 +185,7 @@
             
             <header class="flex items-center justify-between px-10 py-6 bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm">
                 <div class="flex items-center gap-6">
-                    <a href="#" class="logo-container h-12 w-auto shrink-0 flex items-center justify-center">
+                    <a href="{{ route('hr.dashboard') }}" class="logo-container h-12 w-auto shrink-0 flex items-center justify-center">
                         <img src="{{ asset('images/logo1.png') }}" alt="Fibrecomm Logo" class="h-full w-auto object-contain">
                     </a>
                     <div class="h-8 w-[1px] bg-gray-200"></div>
